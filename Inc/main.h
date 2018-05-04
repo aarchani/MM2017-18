@@ -39,7 +39,6 @@
 #ifndef __MAIN_H
 #define __MAIN_H
   /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
 
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -47,13 +46,6 @@
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
-
-//#define OPTO_SENSOR_Pin GPIO_PIN_1
-//#define OPTO_SENSOR_GPIO_Port GPIOA
-//#define TEMP_CS_Pin GPIO_PIN_4
-//#define TEMP_CS_GPIO_Port PORTA
-//#define SHT30_RST_Pin GPIO_PIN_8
-//#define SHT30_RST_GPIO_Port GPIOC
 
 /* ########################## Assert Selection ############################## */
 /**
