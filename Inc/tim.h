@@ -45,6 +45,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_ll_tim.h"
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
@@ -52,7 +53,6 @@
 /* USER CODE END Includes */
 
 extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim8;
 
 /* USER CODE BEGIN Private defines */
@@ -64,9 +64,6 @@ extern void _Error_Handler(char *, int);
 void MX_TIM2_Init(void);
 void MX_TIM4_Init(void);
 void MX_TIM8_Init(void);
-                    
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-                
 
 /* USER CODE BEGIN Prototypes */
 

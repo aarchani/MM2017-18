@@ -32,7 +32,7 @@
     <usedDebug>true</usedDebug>
     	<debugprobe>swd</debugprobe>
     <optimization>6</optimization>
-    <icfloc>1</icfloc>
+    <icfloc>0</icfloc>
     <Adefines>
         <define></define>
     </Adefines>   
@@ -44,6 +44,7 @@
 	    	<include></include>
     </Aincludes>
     <Cdefines>
+        <define>USE_FULL_LL_DRIVER</define>
         <define>__weak=__attribute__((weak))</define>
         <define>__packed=__attribute__((__packed__))</define>
     </Cdefines>
@@ -52,7 +53,6 @@
             <define></define>
         </Adefines>
         <Cdefines>
-            <define>USE_FULL_LL_DRIVER</define>
             <define>MBEDTLS_CONFIG_FILE=&quot;mbedtls_config.h&quot;</define>
             <define>_TIMEVAL_DEFINED</define>
             <define>_SYS_TIME_H_</define>
