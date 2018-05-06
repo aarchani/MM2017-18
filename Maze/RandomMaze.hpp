@@ -83,7 +83,40 @@ void randomizer( unsigned short posH , unsigned short posV)
 		}
 		
 	}
-	
+}
+
+bool getWall( unsigned short vert, unsigned short horiz, unsigned char c)
+{
+	if( c == 'N' )
+	{
+		if( vert == 0 )
+			return true;
+		else
+			return maze->getHWall(vert-1, horiz);
+	}
+	else if( c == 'E' )
+	{
+		if( horiz == 15 )
+			return true;
+		else
+			return maze->getVWall(vert, horiz);
+	}
+	else if( c == 'S' )
+	{
+		if(vert == 15 )
+			return true;
+		else 
+			return maze->getHWall(vert, horiz);
+	}
+	else if( c == 'W' )
+	{
+		if( horiz == 0 )
+			return true;
+		else
+			return maze->getVWall(vert, horiz-1);
+	}
+	else 
+		return true;
 }
 void ieeeMaze()
 {
