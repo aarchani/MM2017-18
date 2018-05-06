@@ -52,7 +52,6 @@
 /* USER CODE END Includes */
 
 extern ADC_HandleTypeDef hadc2;
-extern ADC_HandleTypeDef hadc3;
 
 /* USER CODE BEGIN Private defines */
 
@@ -61,7 +60,6 @@ extern ADC_HandleTypeDef hadc3;
 extern void _Error_Handler(char *, int);
 
 void MX_ADC2_Init(void);
-void MX_ADC3_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
