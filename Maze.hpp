@@ -2,7 +2,7 @@
 #define MAZE_HPP
 #include <iostream>
 #include <string>
-
+#include <iomanip>
 using namespace std;
 
 const string vWall = "|";
@@ -106,6 +106,55 @@ void print(unsigned short vert, unsigned short horz, unsigned char orientation)
 	cout << TOP << endl;
 */
 }
+
+//Print with flood values
+void printFF(unsigned short vert, unsigned short horz, unsigned char orientation, unsigned short (&flood)[16][16])
+{
+	cout << TOP << endl;
+
+	for(int x = 0; x < 16; x++)//For loop to iterate through the 16 rows of the maze
+	{
+		cout << vWall;
+		for(int y = 0; y < 16; y++)//For loop to iterate through the 16 horizontal blocks
+		{
+			if( (x == vert) && ( y == horz))//check for mouse
+				{
+					if(orientation == 'N') cout << N;//print mouse with orientation
+					if(orientation == 'S') cout << S;
+					if(orientation == 'W') cout << W;
+					if(orientation == 'E') cout << E;
+
+				}
+				
+			else if( ( (x == 7) || (x == 8) ) && ((y == 7) || (y == 8)) )//print the goal 
+				cout << goal;
+
+			else cout << setfill('0') << setw(3) << flood[y][x];//print flood value
+
+			if( (verticle[x] & pow(2,y)) != 0)// check if there is a wall here
+			{
+				cout << vWall;//if wall print line
+			}
+			else cout << " ";//if no wall print blank
+		}
+	
+		cout << x << endl;	//switch to next line of horizontal walls
+		cout << node;
+		for(unsigned short y = 0; y < 16; y++)
+		{
+			if( (horizontal[x] & pow(2,y) )!= 0)//check for wall
+			{
+				cout << hWall;
+			}
+			else cout << empty;
+			cout << node;
+		}
+		
+		cout << endl;
+	}
+
+}
+
 //remove the verticle wall at vert, horz
 void removeVWall(unsigned short vert, unsigned short horz)
 {
@@ -136,6 +185,22 @@ void addHWall(unsigned short vert, unsigned short horz)
 	mod = pow(2, horz);
 	horizontal[vert] = (horizontal[vert] | mod);
 }
+//checks if there is a verticle wall at vert, horz
+bool getVWall(unsigned short vert, unsigned short horz)
+{
+	unsigned short mod;
+	mod = pow(2, horz);
+	return (verticle[vert] & mod);
+}
+
+//checks if there is a horizontal wall at vert, horz
+bool getHWall(unsigned short vert, unsigned short horz)
+{
+	unsigned short mod;
+	mod = pow(2, horz);
+	return (horizontal[vert] & mod);
+}
+
 
 //Retuns b^e
  unsigned short pow( unsigned short b, unsigned short e)
