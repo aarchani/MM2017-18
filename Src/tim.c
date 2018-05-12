@@ -60,48 +60,36 @@ void MX_TIM4_Init(void)
 
   TIM_InitStruct.Prescaler = 0;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 0;
+  TIM_InitStruct.Autoreload = 100;
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
   LL_TIM_Init(TIM4, &TIM_InitStruct);
 
-  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH1);
 
   TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
-  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_DISABLE;
+  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
   TIM_OC_InitStruct.OCNState = LL_TIM_OCSTATE_DISABLE;
-  TIM_OC_InitStruct.CompareValue = 0x00FF;
-  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
+  TIM_OC_InitStruct.CompareValue = 5; // This will be set later
+  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;
+
   LL_TIM_OC_Init(TIM4, LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
-
-  LL_TIM_OC_DisableFast(TIM4, LL_TIM_CHANNEL_CH1);
-
-  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH2);
-
-  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_DISABLE;
-  TIM_OC_InitStruct.OCNState = LL_TIM_OCSTATE_DISABLE;
   LL_TIM_OC_Init(TIM4, LL_TIM_CHANNEL_CH2, &TIM_OC_InitStruct);
-
-  LL_TIM_OC_DisableFast(TIM4, LL_TIM_CHANNEL_CH2);
-
-  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH3);
-
-  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_DISABLE;
-  TIM_OC_InitStruct.OCNState = LL_TIM_OCSTATE_DISABLE;
   LL_TIM_OC_Init(TIM4, LL_TIM_CHANNEL_CH3, &TIM_OC_InitStruct);
-
-  LL_TIM_OC_DisableFast(TIM4, LL_TIM_CHANNEL_CH3);
-
-  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH4);
-
-  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_DISABLE;
-  TIM_OC_InitStruct.OCNState = LL_TIM_OCSTATE_DISABLE;
   LL_TIM_OC_Init(TIM4, LL_TIM_CHANNEL_CH4, &TIM_OC_InitStruct);
 
+  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH1);
+  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH2);
+  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH3);
+  LL_TIM_OC_EnablePreload(TIM4, LL_TIM_CHANNEL_CH4);
+
+  LL_TIM_OC_DisableFast(TIM4, LL_TIM_CHANNEL_CH1);
+  LL_TIM_OC_DisableFast(TIM4, LL_TIM_CHANNEL_CH2);
+  LL_TIM_OC_DisableFast(TIM4, LL_TIM_CHANNEL_CH3);
   LL_TIM_OC_DisableFast(TIM4, LL_TIM_CHANNEL_CH4);
 
   LL_TIM_SetTriggerOutput(TIM4, LL_TIM_TRGO_RESET);
 
   LL_TIM_DisableMasterSlaveMode(TIM4);
+  LL_TIM_EnableCounter(TIM4);
 
     /**TIM4 GPIO Configuration    
     PD12     ------> TIM4_CH1
