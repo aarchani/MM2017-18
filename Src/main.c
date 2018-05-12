@@ -20,26 +20,67 @@ int main(void)
   //MX_TIM8_Init();
   //MX_USART2_UART_Init();
 
+  // TIM_CH1: Left Rev
+  // TIM_CH2: Left Fwd
+  // TIM_CH3: Right Fwd
+  // TIM_CH4: Right Rev
 
-  //LL_TIM_IC_SetPrescaler(TIM4, LL_TIM_CHANNEL_CH1, 4);
+  //LL_TIM_EnableCounter(TIM4);
+  //LL_TIM_DisableCounter(TIM4);
+	  LL_TIM_EnableCounter(TIM4);
 
+  #define NUM_PRESCALERS 6
+  int prescalers[NUM_PRESCALERS] = {
+		  120,
+		  180,
+		  80,
+		  150,
+		  130,
+		  120
+  };
+
+  int* currentPrescaler = &prescalers[0];
+
+  int delay = 500;
   while (1)
   {
-	  LL_TIM_OC_SetCompareCH1(TIM4, 0xFFFF);
-	  LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH1);
-	  HAL_Delay(1000);
-	  LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH1);
-	  HAL_Delay(1000);
+	  LL_TIM_SetPrescaler(TIM4, *currentPrescaler++);
+	  if (currentPrescaler - prescalers >= NUM_PRESCALERS) {
+		  currentPrescaler = prescalers;
+	  }
 
-	  LL_TIM_OC_SetCompareCH1(TIM4, 0x0044);
+
+	  LL_TIM_OC_SetCompareCH1(TIM4, 20);
+	  LL_TIM_OC_SetCompareCH4(TIM4, 20);
 	  LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH1);
-	  HAL_Delay(1000);
+	  LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH4);
+	  HAL_Delay(delay);
 	  LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH1);
-	  HAL_Delay(1000);
-	  // TIM_CH1: Left Rev
-	  // TIM_CH2: Left Fwd
-	  // TIM_CH3: Right Fwd
-	  // TIM_CH4: Right Rev
+	  LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH4);
+	  //LL_TIM_DisableCounter(TIM4);
+	  //LL_TIM_SetCounter(TIM4, 0);
+	  HAL_Delay(delay);
+
+	  //LL_TIM_OC_SetCompareCH1(TIM4, 70);
+	  //LL_TIM_OC_SetCompareCH4(TIM4, 70);
+	  //LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH1);
+	  //LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH4);
+	  //HAL_Delay(delay);
+	  //LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH1);
+	  //LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH4);
+	  //HAL_Delay(delay);
+
+	  //LL_TIM_OC_SetCompareCH1(TIM4, 50);
+
+	  // Make the wheels move for 1 second
+	  //LL_TIM_EnableCounter(TIM4);
+	  //LL_TIM_CC_EnableChannel(TIM4, LL_TIM_CHANNEL_CH1);
+	  //HAL_Delay(500);
+	  //LL_TIM_DisableCounter(TIM4);
+	  //LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH1);
+	  //LL_TIM_SetCounter(TIM4, 0);
+	  //HAL_Delay(500);
+
   }
 }
 
