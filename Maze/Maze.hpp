@@ -108,7 +108,7 @@ void print(unsigned short vert, unsigned short horz, unsigned char orientation)
 }
 
 //Print with flood values
-void printFF(unsigned short vert, unsigned short horz, unsigned char orientation, unsigned short flood[15][15])
+void printFF(unsigned short vert, unsigned short horz, unsigned char orientation, unsigned short (&flood)[16][16])
 {
 	cout << TOP << endl;
 

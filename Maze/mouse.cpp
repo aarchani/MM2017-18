@@ -71,9 +71,13 @@ mouse(int x)
 		for( int j = 0; j < 8; j++ )
 		{
 			distance[i][j] = abs( i-7 ) + abs( j-7 );
+		//	cout << "i= " << i << " j= " << j << " : " << distance[i][j] << endl;
 			distance[15-i][j] = distance[i][j];
+		//	cout << "i= " << 15-i << " j= " << j << " : " << distance[15-i][j] << endl;
 			distance[15-i][15-j] = distance[i][j];
+		//	cout << "i= " << 15-i << " j= " << 15-j << " : " << distance[15-i][15-j] << endl;
 			distance[i][15-j] = distance[i][j];
+		//	cout << "i= " << i << " j= " << 15-j << " : " << distance[i][15-j] << endl;
 		}
 	}
 
@@ -83,6 +87,27 @@ void print()
 {
 	cout << "Verticle: " << vert << " Horizontal: " << horz;
 	cout << " Direction: " << direction << endl;
+	for( int i=0; i<16; i++)
+	{
+		for( int j=0; j<16; j++)
+		{
+			cout << distance[j][i] << "	";
+		}
+		cout << endl;
+	}
+}
+bool notDone()
+{
+	if( vert == 7 && horz == 7 )
+		return false;
+	else if ( vert == 7 && horz == 8 )
+		return false;
+	else if ( vert == 8 && horz == 7 )
+		return false;
+	else if ( vert == 8 && horz == 8 )
+		return false;
+	else
+		return true;
 }
 /*	Function that updates the mouses position in the maze
 	Accepts no parameters, increments the vert and horz positions
@@ -158,10 +183,24 @@ unsigned char left()
 			return 'N';
 		else if (direction == 'S' )
 			return 'E';
-		else if( direction == 'W' )
+		else //if( direction == 'W' )
 			return 'S';
 
+	
+}
+unsigned char right()
+{
 
+		if( direction == 'N' )
+			return'E';
+		else if( direction == 'E' )
+			return 'S';
+		else if (direction == 'S' )
+			return 'W';
+		else //if( direction == 'W' )
+			return 'N';
+
+	
 }
 //Function that adds the walls around the mouse
 //Accepts three ints that represent the front, left and right walls
@@ -171,9 +210,9 @@ void updateWallsAdd(unsigned short front, unsigned short right, unsigned short l
 
 	if( direction == 'N' )
 	{
-	 if( front )
+	 if( front && vert != 0 )
 		inMaze.addHWall( vert - 1, horz );
-	 if( left )
+	 if( left && horz != 0 )
 		inMaze.addVWall( vert , horz - 1 );
 	 if( right )
 		inMaze.addVWall( vert, horz );
@@ -182,7 +221,7 @@ void updateWallsAdd(unsigned short front, unsigned short right, unsigned short l
 	{
 	 if( front )
 		inMaze.addVWall( vert , horz );
-	 if( left )
+	 if( left && vert != 0 )
 		inMaze.addHWall( vert - 1 , horz );
 	 if( right )
 		inMaze.addHWall( vert, horz );
@@ -194,17 +233,17 @@ void updateWallsAdd(unsigned short front, unsigned short right, unsigned short l
 		inMaze.addHWall( vert , horz );
 	 if( left )
 		inMaze.addVWall( vert , horz );
-	 if( right )
+	 if( right && horz != 0 )
 		inMaze.addVWall( vert, horz - 1);
 
 	}
 	else if( direction == 'W' )
 	{
-	 if( front )
+	 if( front && horz != 0 )
 		inMaze.addVWall( vert, horz - 1 );
 	 if( left )
 		inMaze.addHWall( vert , horz );
-	 if( right )
+	 if( right && vert != 0 )
 		inMaze.addHWall( vert - 1, horz );
 
 	}	
@@ -271,7 +310,7 @@ void dfs()
 		coord next = list.top();
 		list.pop();
 		vector<coord> adj = next.adjacent(inMaze);
-		for(int i = 0; i < adj.size(); i++)
+		for(unsigned short i = 0; i < adj.size(); i++)
 		{
 			if(distance[adj[i].x][adj[i].y] > distance[next.x][next.y] + 1)
 				distance[adj[i].x][adj[i].y] = distance[next.x][next.y] + 1;
