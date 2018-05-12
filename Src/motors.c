@@ -43,15 +43,19 @@ void PWM_StopPWM(uint32_t channel) {
 	switch (channel) {
 		case LL_TIM_CHANNEL_CH1:
 			LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH1);
+			LL_TIM_OC_SetCompareCH1(TIM4, 0);
 			break;
 		case LL_TIM_CHANNEL_CH2:
 			LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH2);
+			LL_TIM_OC_SetCompareCH2(TIM4, 0);
 			break;
 		case LL_TIM_CHANNEL_CH3:
 			LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH3);
+			LL_TIM_OC_SetCompareCH3(TIM4, 0);
 			break;
 		case LL_TIM_CHANNEL_CH4:
 			LL_TIM_CC_DisableChannel(TIM4, LL_TIM_CHANNEL_CH4);
+			LL_TIM_OC_SetCompareCH4(TIM4, 0);
 			break;
 	}
 }

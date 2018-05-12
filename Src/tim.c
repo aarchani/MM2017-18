@@ -39,8 +39,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
-
 #include "gpio.h"
+
+#include "motors.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -68,7 +69,7 @@ void MX_TIM4_Init(void)
   TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
   TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
   TIM_OC_InitStruct.OCNState = LL_TIM_OCSTATE_DISABLE;
-  TIM_OC_InitStruct.CompareValue = 5; // This will be set later
+  TIM_OC_InitStruct.CompareValue = 0; // This will be set later
   TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;
 
   LL_TIM_OC_Init(TIM4, LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
@@ -90,6 +91,11 @@ void MX_TIM4_Init(void)
 
   LL_TIM_DisableMasterSlaveMode(TIM4);
   LL_TIM_EnableCounter(TIM4);
+
+  PWM_StopPWM(LL_TIM_CHANNEL_CH1);
+  PWM_StopPWM(LL_TIM_CHANNEL_CH2);
+  PWM_StopPWM(LL_TIM_CHANNEL_CH3);
+  PWM_StopPWM(LL_TIM_CHANNEL_CH4);
 
     /**TIM4 GPIO Configuration    
     PD12     ------> TIM4_CH1
