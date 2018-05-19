@@ -18,8 +18,9 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_ADC2_Init();
 	MX_TIM4_Init();
+	MX_TIM8_Init();
+	MX_TIM2_Init();
 	//MX_SPI1_Init();
-	//MX_TIM8_Init();
 	//MX_USART2_UART_Init();
 
 	int power = 30;
@@ -27,13 +28,16 @@ int main(void) {
 
 	PWM_SetPrescaler(0);
 
+
 	while (1) {
-		PWM_SetPWM(PWM_RIGHT_FWD, power);
-		PWM_SetPWM(PWM_LEFT_FWD,  power);
-		HAL_Delay(delay);
-		PWM_StopPWM(PWM_RIGHT_FWD);
-		PWM_StopPWM(PWM_LEFT_FWD);
-		HAL_Delay(delay);
+		//PWM_SetPWM(PWM_RIGHT_FWD, power);
+		//PWM_SetPWM(PWM_LEFT_FWD,  power);
+		//HAL_Delay(delay);
+		//PWM_StopPWM(PWM_RIGHT_FWD);
+		//PWM_StopPWM(PWM_LEFT_FWD);
+		//HAL_Delay(delay);
+		//LL_TIM_GetCounter(TIM2);
+		HAL_Delay(1000);
 	}
 }
 
