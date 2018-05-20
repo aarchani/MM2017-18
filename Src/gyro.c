@@ -5,7 +5,7 @@
 
 
 double GYRO_GetAngle() {
-
+	return 0.0;
 }
 
 void GYRO_ResetAngle() {
@@ -18,4 +18,6 @@ uint8_t GYRO_ReadStatusReg() {
 	// TODO
 
 	HAL_GPIO_WritePin(GYRO_CS_PORT, GYRO_CS_PIN, GPIO_PIN_SET);
+
+	return 0;
 }
