@@ -6,4 +6,5 @@ void IR_Init() {
 
 double IR_GetDistance(uint8_t whichLed) {
 	// TODO
+	return 0;
 }
