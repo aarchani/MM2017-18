@@ -39,6 +39,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "adc.h"
+#include "stm32f4xx_hal_adc_ex.h"
 
 #include "gpio.h"
 
@@ -48,9 +49,11 @@
 
 ADC_HandleTypeDef hadc2;
 
+
 /* ADC2 init function */
 void MX_ADC2_Init(void)
 {
+
   ADC_ChannelConfTypeDef sConfig;
 
     /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
@@ -59,14 +62,14 @@ void MX_ADC2_Init(void)
   hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
   hadc2.Init.Resolution = ADC_RESOLUTION_12B;
   hadc2.Init.ScanConvMode = DISABLE;
-  hadc2.Init.ContinuousConvMode = DISABLE;
+  hadc2.Init.ContinuousConvMode = ENABLE;
   hadc2.Init.DiscontinuousConvMode = DISABLE;
   hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = 1;
+  hadc2.Init.NbrOfConversion = 4;
   hadc2.Init.DMAContinuousRequests = DISABLE;
-  hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc2.Init.EOCSelection = DISABLE;
   if (HAL_ADC_Init(&hadc2) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -82,7 +85,129 @@ void MX_ADC2_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Rank = 2;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = 3;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_7;
+  sConfig.Rank = 4;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
 }
+
+
+uint32_t ADC_readValue(uint32_t channelNum) {
+
+	//uint32_t returnVal = 0;
+	ADC_ChannelConfTypeDef sConfig;
+
+	if (channelNum == 0) {
+		sConfig.Channel = ADC_CHANNEL_4;
+	} else if (channelNum == 1) {
+		sConfig.Channel = ADC_CHANNEL_5;
+	} else if (channelNum == 2) {
+		sConfig.Channel = ADC_CHANNEL_6;
+	} else {
+		sConfig.Channel = ADC_CHANNEL_7;
+	}
+
+	sConfig.Rank = 1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+	if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+
+	 /*Start the conversion process*/
+	 if (HAL_ADC_Start(&hadc2) != HAL_OK) {
+		 Error_Handler();
+	 }
+
+	 while(HAL_ADC_PollForConversion(&hadc2, 0) != HAL_OK);
+
+	 return HAL_ADC_GetValue(&hadc2);
+
+	/*if(rankNum == 1) {
+		sConfig.Channel = ADC_CHANNEL_4;
+		sConfig.Rank = rankNum;
+		sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+		if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK) {
+			_Error_Handler(__FILE__, __LINE__);
+		}
+
+		HAL_ADC_Start_IT(&hadc2);
+
+		returnVal = HAL_ADC_GetValue(&hadc2);
+	}
+	else if(rankNum == 2) {
+		sConfig.Channel = ADC_CHANNEL_5;
+		sConfig.Rank = rankNum;
+		sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+		if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK) {
+			_Error_Handler(__FILE__, __LINE__);
+		}
+
+		HAL_ADC_Start_IT(&hadc2);
+
+		returnVal = HAL_ADC_GetValue(&hadc2);
+	}
+	else if(rankNum == 3) {
+		sConfig.Channel = ADC_CHANNEL_6;
+		sConfig.Rank = rankNum;
+		sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+		if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK) {
+			_Error_Handler(__FILE__, __LINE__);
+		}
+
+		HAL_ADC_Start_IT(&hadc2);
+
+		returnVal = HAL_ADC_GetValue(&hadc2);
+	}
+	else {
+		sConfig.Channel = ADC_CHANNEL_7;
+		sConfig.Rank = rankNum;
+		sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+		if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK) {
+			_Error_Handler(__FILE__, __LINE__);
+		}
+
+		HAL_ADC_Start_IT(&hadc2);
+
+		returnVal = HAL_ADC_GetValue(&hadc2);
+	}
+
+	 HAL_ADC_Stop_IT(&hadc2);
+	 sConfig.Rank = -1;
+	 HAL_ADC_ConfigChannel(&hadc2, &sConfig);
+	 */
+
+	//return returnVal;
+}
+
+
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 {
