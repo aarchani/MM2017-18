@@ -7,6 +7,7 @@
 #include "gpio.h"
 #include "surprise.h"
 
+#include "irled.h"
 #include "motors.h"
 #include "encoders.h"
 #include "gyro.h"
@@ -23,10 +24,10 @@ int main(void) {
 	MX_TIM8_Init();
 	MX_TIM2_Init();
 
+	IR_Init();
 	PWM_Init();
 
 	int power = 5;
-	double dist = 1.0; // in cm
 	int delay = 1000;
 
 	PWM_SetPrescaler(0);
@@ -36,19 +37,15 @@ int main(void) {
 
 	//PWM_MoveForwards(power, dist);
 
-	PWM_SetSpeed(DIR_FWD, power);
+	//PWM_SetSpeed(DIR_FWD, power);
 	HAL_Delay(500);
 
-	initSurprise();
+	//initSurprise();
+	double dist;
 
 	while (1) {
-		HAL_Delay(1000);
-		//PWM_SetPWM(PWM_RIGHT_FWD, power);
-		//PWM_SetPWM(PWM_LEFT_FWD,  power);
-		//HAL_Delay(delay);
-		//PWM_StopPWM(PWM_RIGHT_FWD);
-		//PWM_StopPWM(PWM_LEFT_FWD);
-		//HAL_Delay(delay);
+		dist = IR_GetDistance(IR_LED_LEFT);
+		//HAL_Delay(1000);
 	}
 }
 
