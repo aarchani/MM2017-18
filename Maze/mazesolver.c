@@ -1,8 +1,26 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<math.h>
 
 typedef enum { false, true } bool;
+
+const char vWall[] = "|";
+const char hWall[] = "---";
+const char node[] = "+";
+const char goal[] = " # ";
+const char empty[] = "   ";
+const char N[] = " ^ ";
+const char S[] = " V ";
+const char W[] = " < ";
+const char E[] = " > ";
+const char TOP[] = "+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+";
+
+typedef struct
+{
+    unsigned short verticle[16];
+    unsigned short horizontal[16];
+} Maze;
 
 typedef struct
 {
@@ -43,7 +61,8 @@ typedef struct
     Maze inMaze;
     unsigned short distance[16][16];//floodfill distance 
 } mouse;
-mouse new_mouse(mouse m)
+
+void new_mouse(mouse m)
 {
     m.direction = 'E';//Initial direction in maze is east
     m.vert = 0;//Starting at position 0,0
@@ -57,7 +76,7 @@ mouse new_mouse(mouse m)
         }
     }
 }
-mouse new_ffmouse(mouse m,int x)
+void new_ffmouse(mouse m,int x)
 {
 
     m.direction = 'E';//Initial direction in maze is east
@@ -309,183 +328,166 @@ void dfs()
 
 }
 */
-const string vWall = "|";
-const string hWall = "---";
-const string node = "+";
-const string goal = " # ";
-const string empty = "   ";
-const string N = " ^ ";
-const string S = " V ";
-const string W = " < ";
-const string E = " > ";
-const string TOP = "+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+";
-
-typedef struct
-{
-    unsigned short verticle[16];
-    unsigned short horizontal[16];
-} Maze;
-//COntinue transcribing to C code from here**********************************************
-void  new_Maze()
+void  new_Maze(Maze z)
 {
     for(int i = 0; i < 16; i++)
     {
-        verticle[i] = 32768;
-        horizontal[i] = 0;
+        z.verticle[i] = 32768;
+        z.horizontal[i] = 0;
     }
-    horizontal[15] = 65535;
+    z.horizontal[15] = 65535;
 
 }
-void MazeFull()
+void MazeFull(Maze z)
 {
     for(int i = 0; i < 16; i++)
     {
-        verticle[i] = 65535;
-        horizontal[i] = 65535;
+        z.verticle[i] = 65535;
+        z.horizontal[i] = 65535;
     }
 
 }
 
-void print(unsigned short vert, unsigned short horz, unsigned char orientation)
+void print(Maze z, unsigned short vert, unsigned short horz, unsigned char orientation)
 {
-    cout << TOP << endl;
-
+	printf("%s\n", TOP);
     for(int x = 0; x < 16; x++)//For loop to iterate through the 16 rows of the maze
     {
-        cout << vWall;
+        printf("%s", vWall); //cout << vWall;
         for(int y = 0; y < 16; y++)//For loop to iterate through the 16 horizontal blocks
         {
             if( (x == vert) && ( y == horz))//check for mouse
                 {
-                    if(orientation == 'N') cout << N;//print mouse with orientation
-                    if(orientation == 'S') cout << S;
-                    if(orientation == 'W') cout << W;
-                    if(orientation == 'E') cout << E;
-
+					printf("%c", orientation ); 
+                    /*if(orientation == 'N') printf("%s", cout << N;//print mouse with orientation
+                    if(orientation == 'S') printf("%s", cout << S;
+                    if(orientation == 'W') printf("%s", cout << W;
+                    if(orientation == 'E') printf("%s", cout << E;
+					*/
                 }
 
             else if( ( (x == 7) || (x == 8) ) && ((y == 7) || (y == 8)) )//print the goal 
-                cout << goal;
+                printf("%s", goal);// cout << goal;
 
-            else cout << empty;//print empty
+            else printf("%s", empty );// cout << empty;//print empty
 
             if( (verticle[x] & pow(2,y)) != 0)// check if there is a wall here
             {
-                cout << vWall;//if wall print line
+                printf("%s", vWall); //cout << vWall;//if wall print line
             }
-            else cout << " ";//if no wall print blank
+            else printf(" "); //cout << " ";//if no wall print blank
         }
 
-        cout << x << endl;  //switch to next line of horizontal walls
-        cout << node;
+        printf("%u\n", x);// cout << x << endl;  //switch to next line of horizontal walls
+        printf("%s", node); // cout << node;
         for(unsigned short y = 0; y < 16; y++)
         {
             if( (horizontal[x] & pow(2,y) )!= 0)//check for wall
             {
-                cout << hWall;
+                printf("%s", hWall); //cout << hWall;
             }
-            else cout << empty;
-            cout << node;
+            else printf("%s", empty); //cout << empty;
+            printf("%s", node); // cout << node;
         }
         //cout << vWall;
-        cout << endl;
+        printf("\n"); // cout << endl;
     }
 }
 
 void printFF(unsigned short vert, unsigned short horz, unsigned char orientation, unsigned short (&flood)[16][16])
 {
-    cout << TOP << endl;
+    printf("%s\n", TOP);// cout << TOP << endl;
 
     for(int x = 0; x < 16; x++)//For loop to iterate through the 16 rows of the maze
     {
-        cout << vWall;
+        printf("%s", vWall);// cout << vWall;
         for(int y = 0; y < 16; y++)//For loop to iterate through the 16 horizontal blocks
         {
             if( (x == vert) && ( y == horz))//check for mouse
                 {
-                    if(orientation == 'N') cout << N;//print mouse with orientation
-                    if(orientation == 'S') cout << S;
-                    if(orientation == 'W') cout << W;
-                    if(orientation == 'E') cout << E;
-
+                    if(orientation == 'N') printf("%c", N);// cout << N;//print mouse orientation
+                    if(orientation == 'S') printf("%c", S);// cout << S;
+                    if(orientation == 'W') printf("%c", W);// cout << W;
+                    if(orientation == 'E') printf("%c", E);// cout << E;
+					
                 }
 
             else if( ( (x == 7) || (x == 8) ) && ((y == 7) || (y == 8)) )//print the goal 
-                cout << goal;
+                printf("%s", goal);// cout << goal;
 
-            else cout << setfill('0') << setw(3) << flood[y][x];//print flood value
+            else printf("%s03", flood[y][x]);// cout << setfill('0') << setw(3) << flood[y][x];//print flood value
 
             if( (verticle[x] & pow(2,y)) != 0)// check if there is a wall here
             {
-                cout << vWall;//if wall print line
+               printf("%s", vWall); // cout << vWall;//if wall print line
             }
-            else cout << " ";//if no wall print blank
+            else printf(" "); // cout << " ";//if no wall print blank
         }
 
-        cout << x << endl;  //switch to next line of horizontal walls
-        cout << node;
+        printf("%i", x);// cout << x << endl;  //switch to next line of horizontal walls
+        printf("%s", node); // cout << node;
         for(unsigned short y = 0; y < 16; y++)
         {
             if( (horizontal[x] & pow(2,y) )!= 0)//check for wall
             {
-                cout << hWall;
+                printf("%s", hWall); // cout << hWall;
             }
-            else cout << empty;
-            cout << node;
+            else printf("%s", empty); // cout << empty;
+            printf("%s", node); // cout << node;
         }
 
-        cout << endl;
+        printf("\n");// cout << endl;
     }
 
 }
 
-void removeVWall(unsigned short vert, unsigned short horz)
+void removeVWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod;
     mod = pow(2, horz);
-    verticle[vert] = (verticle[vert] & (~mod));
+    z.verticle[vert] = (z.verticle[vert] & (~mod));
 }
 
 //removes the horizontal wall at vert, horz
-void removeHWall(unsigned short vert, unsigned short horz)
+void removeHWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod;
     mod = pow(2, horz);
-    horizontal[vert] = (horizontal[vert] & (~mod));
+    z.horizontal[vert] = (z.horizontal[vert] & (~mod));
 }
 //sets the verticle wall at vert, horz 
-void addVWall(unsigned short vert, unsigned short horz)
+void addVWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod;
     mod = pow(2, horz);
-    verticle[vert] = (verticle[vert] | mod);
+    z.verticle[vert] = (z.verticle[vert] | mod);
 }
 
 //sets the horizontal wall at vert, horz
-void addHWall(unsigned short vert, unsigned short horz)
+void addHWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod;
     mod = pow(2, horz);
-    horizontal[vert] = (horizontal[vert] | mod);
+    z.horizontal[vert] = (z.horizontal[vert] | mod);
 }
 //checks if there is a verticle wall at vert, horz
-bool getVWall(unsigned short vert, unsigned short horz)
+bool getVWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod;
     mod = pow(2, horz);
-    return (verticle[vert] & mod);
+    return (z.verticle[vert] & mod);
 }
 
 //checks if there is a horizontal wall at vert, horz
-bool getHWall(unsigned short vert, unsigned short horz)
+bool getHWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod;
     mod = pow(2, horz);
-    return (horizontal[vert] & mod);
+    return (z.horizontal[vert] & mod);
 }
 
 
-//Retuns b^e
+/*Retuns b^e
  unsigned short pow( unsigned short b, unsigned short e)
 {
     unsigned short result = 1;
@@ -496,6 +498,6 @@ bool getHWall(unsigned short vert, unsigned short horz)
     }
     return result;
 }
-
+*/
 
 
