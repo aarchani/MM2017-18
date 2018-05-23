@@ -5,8 +5,10 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "surprise.h"
 
 #include "motors.h"
+#include "encoders.h"
 #include "gyro.h"
 
 void SystemClock_Config(void);
@@ -20,26 +22,43 @@ int main(void) {
 	MX_TIM4_Init();
 	MX_TIM8_Init();
 	MX_TIM2_Init();
-	//MX_SPI1_Init();
-	//MX_USART2_UART_Init();
 
-	int power = 30;
+	PWM_Init();
+
+	int power = 5;
+	double dist = 1.0; // in cm
 	int delay = 1000;
 
 	PWM_SetPrescaler(0);
 
+	// Wait before vroom vroom
+	HAL_Delay(3000);
+
+	//PWM_MoveForwards(power, dist);
+
+	PWM_SetSpeed(DIR_FWD, power);
+	HAL_Delay(500);
+
+	initSurprise();
 
 	while (1) {
+		HAL_Delay(1000);
 		//PWM_SetPWM(PWM_RIGHT_FWD, power);
 		//PWM_SetPWM(PWM_LEFT_FWD,  power);
 		//HAL_Delay(delay);
 		//PWM_StopPWM(PWM_RIGHT_FWD);
 		//PWM_StopPWM(PWM_LEFT_FWD);
 		//HAL_Delay(delay);
-		//LL_TIM_GetCounter(TIM2);
-		HAL_Delay(1000);
 	}
 }
+
+/*
+ * Gets called every 1ms due to the SysTick timer
+ */
+void HAL_SYSTICK_Callback() {
+	advanceNote();
+}
+
 
 /** System Clock Configuration
  */
@@ -92,6 +111,9 @@ void SystemClock_Config(void) {
 
 /* USER CODE BEGIN 4 */
 
+/*
+ * Gets called every millisecond
+ */
 /* USER CODE END 4 */
 
 /**

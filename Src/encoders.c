@@ -51,3 +51,12 @@ void ENC_ResetEncoder(TIM_TypeDef* encoderSide) {
 	if(encoderSide == ENCODER_LEFT)	 ENCODER_LEFT->CNT  = 0;
 	if(encoderSide == ENCODER_RIGHT) ENCODER_RIGHT->CNT = 0;
 }
+
+/*
+ * Resets both encoders.
+ *
+ */
+void ENC_ResetEncoders() {
+	ENCODER_LEFT->CNT  = 0;
+	ENCODER_RIGHT->CNT = 0;
+}
