@@ -61,7 +61,7 @@ extern void _Error_Handler(char *, int);
 
 void MX_ADC2_Init(void);
 
-uint32_t readValue(uint32_t);
+uint32_t ADC_readValue(uint32_t);
 
 /* USER CODE BEGIN Prototypes */
 
