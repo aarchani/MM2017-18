@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 //#include <math.h>
 
 typedef enum { false, true } bool;
@@ -63,33 +64,34 @@ typedef struct
 } mouse;
 
 
-void removeVWall(Maze z, unsigned short vert, unsigned short horz)
+unsigned short removeVWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod = 1 << horz;
-    z.verticle[vert] = (z.verticle[vert] & (~mod));
+    //z.verticle[vert] =
+	return (z.verticle[vert] & (~mod));
 }
 
 //removes the horizontal wall at vert, horz
-void removeHWall(Maze z, unsigned short vert, unsigned short horz)
+unsigned short removeHWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod = 1 << horz;
-    //mod = pow(2, horz);
-    z.horizontal[vert] = (z.horizontal[vert] & (~mod));
+    //mod = pow(2, horz);z.horizontal[vert] =
+	return (z.horizontal[vert] & (~mod));
 }
 //sets the verticle wall at vert, horz 
-void addVWall(Maze z, unsigned short vert, unsigned short horz)
+unsigned short addVWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod = 1 << horz;
-    //mod = pow(2, horz);
-    z.verticle[vert] = (z.verticle[vert] | mod);
+    //mod = pow(2, horz);z.verticle[vert] =
+	return (z.verticle[vert] | mod);
 }
 
 //sets the horizontal wall at vert, horz
-void addHWall(Maze z, unsigned short vert, unsigned short horz)
+unsigned short addHWall(Maze z, unsigned short vert, unsigned short horz)
 {
     unsigned short mod = 1 << horz;
-    //mod = pow(2, horz);
-    z.horizontal[vert] = (z.horizontal[vert] | mod);
+    //mod = pow(2, horz); z.horizontal[vert] 
+	return (z.horizontal[vert] | mod);
 }
 //checks if there is a verticle wall at vert, horz
 bool getVWall(Maze z, unsigned short vert, unsigned short horz)
@@ -107,31 +109,31 @@ bool getHWall(Maze z, unsigned short vert, unsigned short horz)
     return (z.horizontal[vert] & mod);
 }
 
-void MazeFull(Maze z)
+void MazeFull(Maze *z)
 {
     for(int i = 0; i < 16; i++)
     {
-        z.verticle[i] = 65535;
-        z.horizontal[i] = 65535;
+        z->verticle[i] = 65535;
+        z->horizontal[i] = 65535;
     }
 
 }
 
-void new_mouse(mouse m)
+void new_mouse(mouse *m)
 {
-    m.direction = 'E';//Initial direction in maze is east
-    m.vert = 0;//Starting at position 0,0
-    m.horz = 0;
-    MazeFull(m.inMaze);//Initiallizing a fullmaze for dfs algorithm
+    m->direction = 'E';//Initial direction in maze is east
+    m->vert = 0;//Starting at position 0,0
+    m->horz = 0;
+    MazeFull(&m->inMaze);//Initiallizing a fullmaze for dfs algorithm
     for(int i = 0; i < 16; i++)
     {
         for(int j = 0; j < 15; j++)
         {
-            m.distance[i][j] = -1;
+            m->distance[i][j] = -1;
         }
     }
 }
-void new_ffmouse(mouse m,int x)
+/*void new_ffmouse(mouse m,int x)
 {
 
     m.direction = 'E';//Initial direction in maze is east
@@ -153,7 +155,7 @@ void new_ffmouse(mouse m,int x)
         }
     }
 
-}
+}*/
 
 void printMouse(mouse m)
 {
@@ -185,60 +187,60 @@ bool notDone(mouse m)
     Accepts no parameters, increments the vert and horz positions
     based on the mouses current direction
 */
-void moveForward(mouse m)
+void moveForward(mouse *m)
 {
-    if(m.direction == 'N' && m.vert != 0)
+    if(m->direction == 'N' && m->vert != 0)
     {
-        m.vert = m.vert - 1;
+        m->vert = m->vert - 1;
     }
-    else if(m.direction == 'E' && m.horz != 15)
+    else if(m->direction == 'E' && m->horz != 15)
     {
-        m.horz = m.horz + 1;
+        m->horz = m->horz + 1;
     }
-    else if(m.direction == 'S' && m.vert != 15)
+    else if(m->direction == 'S' && m->vert != 15)
     {
-        m.vert = m.vert + 1;
+        m->vert = m->vert + 1;
     }
-    else if(m.direction == 'W' && m.horz != 0)
+    else if(m->direction == 'W' && m->horz != 0)
     {
-        m.horz = m.horz - 1;
+        m->horz = m->horz - 1;
     }
 
 }
-void turn(mouse m, unsigned short x)
+void turn(mouse *m, unsigned short x)
 {
     if( x == 0 )
     {
-        if( m.direction == 'N' )
-            m.direction = 'W';
-        else if( m.direction == 'E' )
-            m.direction = 'N';
-        else if (m.direction == 'S' )
-            m.direction = 'E';
-        else if( m.direction == 'W' )
-            m.direction = 'S';
+        if( m->direction == 'N' )
+            m->direction = 'W';
+        else if( m->direction == 'E' )
+            m->direction = 'N';
+        else if (m->direction == 'S' )
+            m->direction = 'E';
+        else if( m->direction == 'W' )
+            m->direction = 'S';
     }
     else if( x == 1 )
     {
-        if( m.direction == 'N' )
-            m.direction = 'E';
-        else if( m.direction == 'E' )
-            m.direction = 'S';
-        else if (m.direction == 'S' )
-            m.direction = 'W';
-        else if( m.direction == 'W' )
-            m.direction = 'N';
+        if( m->direction == 'N' )
+            m->direction = 'E';
+        else if( m->direction == 'E' )
+            m->direction = 'S';
+        else if (m->direction == 'S' )
+            m->direction = 'W';
+        else if( m->direction == 'W' )
+            m->direction = 'N';
     }
     else if( x == 2 )
     {
-        if( m.direction == 'N' )
-            m.direction = 'S';
-        else if( m.direction == 'E' )
-            m.direction = 'W';
-        else if (m.direction == 'S' )
-            m.direction = 'N';
-        else if( m.direction == 'W' )
-            m.direction = 'E';
+        if( m->direction == 'N' )
+            m->direction = 'S';
+        else if( m->direction == 'E' )
+            m->direction = 'W';
+        else if (m->direction == 'S' )
+            m->direction = 'N';
+        else if( m->direction == 'W' )
+            m->direction = 'E';
     }
 }
 
@@ -271,52 +273,52 @@ unsigned char right(mouse m)
 
 
 }
-void updateWallsAdd(mouse m, unsigned short front, unsigned short right, unsigned short left)
+//*********************************NEEDS TO BE UPDATED WITH POINTERS AND REFERNECES**********
+void updateWallsAdd(mouse *m, unsigned short front, unsigned short right, unsigned short left)
 {
 
-    if( m.direction == 'N' )
+    if( m->direction == 'N' )
     {
-     if( front && m.vert != 0 )
-        addHWall( m.inMaze, m.vert - 1, m.horz );
-     if( left && m.horz != 0 )
-        addVWall( m.inMaze, m.vert , m.horz - 1 );
+     if( front && m->vert != 0 )
+        m->inMaze.horizontal[m->vert-1] = addHWall( m->inMaze, m->vert - 1, m->horz );
+     if( left && m->horz != 0 )
+        m->inMaze.verticle[m->vert] = addVWall( m->inMaze, m->vert, m->horz - 1 );
      if( right )
-        addVWall( m.inMaze, m.vert, m.horz );
+        m->inMaze.verticle[m->vert] = addVWall( m->inMaze, m->vert, m->horz );
     }
-    else if( m.direction == 'E' )
+    else if( m->direction == 'E' )
     {
      if( front )
-        addVWall( m.inMaze, m.vert, m.horz );
-     if( left && m.vert != 0 )
-        addHWall( m.inMaze, m.vert - 1 , m.horz );
+        m->inMaze.verticle[m->vert] = addVWall( m->inMaze, m->vert, m->horz );
+     if( left && m->vert != 0 )
+        m->inMaze.horizontal[m->vert-1] = addHWall( m->inMaze, m->vert - 1 , m->horz );
      if( right )
-        addHWall( m.inMaze, m.vert, m.horz );
+        m->inMaze.horizontal[m->vert] = addHWall( m->inMaze, m->vert, m->horz );
 
     }
-    else if (m.direction == 'S' )
+    else if (m->direction == 'S' )
     {
      if( front )
-        addHWall( m.inMaze, m.vert, m.horz );
+        m->inMaze.horizontal[m->vert] = addHWall( m->inMaze, m->vert, m->horz );
      if( left )
-        addVWall( m.inMaze, m.vert, m.horz );
-     if( right && m.horz != 0 )
-        addVWall( m.inMaze, m.vert, m.horz - 1);
+        m->inMaze.verticle[m->vert] = addVWall( m->inMaze, m->vert, m->horz );
+     if( right && m->horz != 0 )
+        m->inMaze.verticle[m->vert] = addVWall( m->inMaze, m->vert, m->horz - 1);
 
     }
-    else if( m.direction == 'W' )
+    else if( m->direction == 'W' )
     {
-     if( front && m.horz != 0 )
-        addVWall( m.inMaze, m.vert, m.horz - 1 );
+     if( front && m->horz != 0 )
+        m->inMaze.verticle[m->vert] = addVWall( m->inMaze, m->vert, m->horz - 1 );
      if( left )
-        addHWall( m.inMaze, m.vert, m.horz );
-     if( right && m.vert != 0 )
-        addHWall( m.inMaze, m.vert - 1, m.horz );
+        m->inMaze.horizontal[m->vert] = addHWall( m->inMaze, m->vert, m->horz );
+     if( right && m->vert != 0 )
+        m->inMaze.horizontal[m->vert-1] = addHWall( m->inMaze, m->vert - 1, m->horz );
 
     }
 
 }
-
-/*	TO BE CONVERTED*************************************8
+/*
 void updateWallsRemove(mouse m, unsigned short front, unsigned short right, unsigned short left)
 {
 
@@ -383,14 +385,14 @@ void dfs()
 
 }
 */
-void  new_Maze(Maze z)
+void  new_Maze(Maze *z)
 {
     for(int i = 0; i < 16; i++)
     {
-        z.verticle[i] = 32768;
-        z.horizontal[i] = 0;
+        z->verticle[i] = 32768;
+        z->horizontal[i] = 0;
     }
-    z.horizontal[15] = 65535;
+    z->horizontal[15] = 65535;
 
 }
 
@@ -405,12 +407,12 @@ void printMaze(Maze z, unsigned short vert, unsigned short horz, unsigned char o
         {
             if( (x == vert) && ( y == horz))//check for mouse
                 {
-					printf("%c", orientation ); 
-                    /*if(orientation == 'N') printf("%s", cout << N;//print mouse with orientation
-                    if(orientation == 'S') printf("%s", cout << S;
-                    if(orientation == 'W') printf("%s", cout << W;
-                    if(orientation == 'E') printf("%s", cout << E;
-					*/
+					//printf("%c", orientation ); 
+                    if(orientation == 'N') printf("%s", N );// cout << N;//print  orientation
+                    if(orientation == 'S') printf("%s", S); //cout << S;
+                    if(orientation == 'W') printf("%s", W);//cout << W;
+                    if(orientation == 'E') printf("%s", E); //cout << E;
+					
                 }
 
             else if( ( (x == 7) || (x == 8) ) && ((y == 7) || (y == 8)) )//print the goal 
@@ -488,22 +490,24 @@ void printFF(Maze z, unsigned short vert, unsigned short horz, unsigned char ori
 
 }
 
-
-
-/*Retuns b^e
- unsigned short pow( unsigned short b, unsigned short e)
-{
-    unsigned short result = 1;
-    while( e != 0)
-    {
-        result = result * b;
-        e--;
-    }
-    return result;
-}
-*/
-
 int main()
 {
+	unsigned char n = 'N';
+	unsigned short x = 0;
+	unsigned short y = 0;
+	Maze newMaze;
+	new_Maze(&newMaze);
+	MazeFull(&newMaze);
+	printMaze(newMaze,x,y,n);
 
+	for(x=0; x<16; x++)
+	{
+		for(y=0;y<16;y++)
+		{
+		usleep(100000);
+		newMaze.verticle[x] = removeVWall(newMaze,x,y);
+		newMaze.horizontal[x] = removeHWall(newMaze,x,y);
+		printMaze(newMaze,x,y,n);
+		}
+	}
 }

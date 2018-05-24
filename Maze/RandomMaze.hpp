@@ -23,7 +23,7 @@ RandomMaze()//class constructer
 
 ~RandomMaze()//class deconstructer
 {
-	delete maze;
+	//delete maze;
 }
 
 //Recursive depth-first search maze genorator

@@ -32,7 +32,7 @@ void lhf(mouse myMouse, RandomMaze myRandom)
 			myMouse.turn(1);
 		}
 		myMouse.inMaze.print(myMouse.vert, myMouse.horz, myMouse.direction);
-		usleep(90000);
+		usleep(50000);
 	}
 //	cout << "\n I am the champion\n";
 }
