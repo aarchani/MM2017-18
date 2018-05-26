@@ -7,6 +7,7 @@
 #include "gpio.h"
 #include "surprise.h"
 
+#include "mouse.h"
 #include "irled.h"
 #include "motors.h"
 #include "encoders.h"
@@ -20,12 +21,14 @@ int main(void) {
 
 	MX_GPIO_Init();
 	MX_ADC2_Init();
+	MX_TIM2_Init();
+	//MX_TIM3_Init();
 	MX_TIM4_Init();
 	MX_TIM8_Init();
-	MX_TIM2_Init();
 
 	IR_Init();
 	PWM_Init();
+	MOUSE_Init();
 
 	int power = 5;
 	int delay = 1000;
@@ -33,20 +36,24 @@ int main(void) {
 	PWM_SetPrescaler(0);
 
 	// Wait before vroom vroom
-	HAL_Delay(3000);
+	HAL_Delay(2000);
 
-	//PWM_MoveForwards(power, dist);
-
-	//PWM_SetSpeed(DIR_FWD, power);
-	HAL_Delay(500);
 
 	//initSurprise();
-	double dist;
+	float dist = 30.0;
+	float distLeft, distRight;
+	//MOUSE_MoveDistanceCM(dist);
+	MOUSE_Rotate90Deg(CLOCKWISE);
+	ENC_ResetEncoders();
+	//while(1) {
+	distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
+	distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+	//}
 
-	while (1) {
-		dist = IR_GetDistance(IR_LED_LEFT);
-		//HAL_Delay(1000);
-	}
+	//while (!MOUSE_IsMazeSolved()) {
+	//	MOUSE_LeftHandFollowStep();
+	//	HAL_Delay(500);
+	//}
 }
 
 /*

@@ -21,8 +21,6 @@ void PWM_StopPWM(uint32_t channel);
 void PWM_SetSpeed(uint8_t direction, uint16_t speed);
 void PWM_StopMotors();
 
-void PWM_MoveForwards(uint16_t speed, double distanceCM);
-
 void PWM_SetPrescaler(uint32_t prescaler);
 void PWM_SetFrequency(float freq);
 

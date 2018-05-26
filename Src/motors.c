@@ -73,15 +73,7 @@ void PWM_StopPWM(uint32_t channel) {
 	}
 }
 
-void PWM_MoveForwards(uint16_t speed, double distanceCM) {
-	ENC_ResetEncoders();
-
-	PWM_SetSpeed(DIR_FWD, speed);
-
-	// TODO Replace with PID
-	while (ENC_GetEncoderDistanceCM(ENCODER_LEFT) < distanceCM);
-
-	PWM_StopMotors();
+void PWM_MoveFwdDistance(uint16_t speed, double distanceCM) {
 }
 
 /*

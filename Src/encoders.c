@@ -21,7 +21,7 @@ uint16_t ENC_GetEncoderTicks(TIM_TypeDef* encoderSide) {
 }
 
 /*
- * Returns the distance that the wheel has rotated, in floating point format.
+ * Returns the signed distance that the wheel has rotated, in floating point format.
  *
  * Checks to see if the input is a valid TIM Type, otherwise returns 0.
  *
@@ -30,8 +30,8 @@ uint16_t ENC_GetEncoderTicks(TIM_TypeDef* encoderSide) {
  *
  * Returns: The distance in centimeters that the wheel has rotated
  */
-double ENC_GetEncoderDistanceCM(TIM_TypeDef* encoderSide) {
-	int ticks = ENC_GetEncoderTicks(encoderSide);
+float ENC_GetEncoderDistanceCM(TIM_TypeDef* encoderSide) {
+	int16_t ticks = ENC_GetEncoderTicks(encoderSide);
 
 	if (encoderSide == ENCODER_LEFT)  return ticks * CM_PER_TICK_LEFT;
 	if (encoderSide == ENCODER_RIGHT) return ticks * CM_PER_TICK_RIGHT;

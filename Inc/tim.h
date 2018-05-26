@@ -62,6 +62,8 @@ void MX_TIM4_Init(void);
 void MX_TIM8_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void MX_TIM3_Init(void);
+void TIM3_IRQHandler(void);
 
 /* USER CODE END Prototypes */
 
