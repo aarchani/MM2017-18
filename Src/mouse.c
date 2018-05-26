@@ -149,7 +149,7 @@ bool MOUSE_HasMouseReturned(mouse_t mouse) {
 void MOUSE_PathfinderFloodFill() {
 	
 
-	floodFill(7
+//	floodFill(7
 }
 
 void floodFill(uint16_t x, uint16_t y, uint16_t dist, uint16_t distance[16][16] uint16_t* maze) {
