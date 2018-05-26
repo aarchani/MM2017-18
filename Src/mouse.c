@@ -6,8 +6,16 @@
 uint16_t maze[2][16] = {0};
 mouse_t mouse = {0, 0, EAST};
 
-void MOUSE_Init() {
+void MOUSE_Init( uint16_t maze[2][16], mouse_t *mouse) {
 	
+
+	for(int i=0; i<16; i=i+1)
+	{
+		maze[HORZ][i] = 0;
+		maze[VERT][i] = 32768;
+	}
+	maze[HORZ] = 65535;
+	mouse = {0, 0, EAST};
 }
 
 void MOUSE_MoveDistanceCM(float distance) {
@@ -83,8 +91,8 @@ void MOUSE_AddWall(uint16_t* walls, mouse_t mouse) {
 	walls[mouse.y] = (walls[mouse.y] | ( 1 << mouse.x ));
 }
 
-bool MOUSE_GetWall(uint16_t *walls, mouse_t mouse ) {
-	return (walls[mouse.y] & ( 1 << mouse.x ));
+bool MOUSE_GetWall(uint16_t* walls, uint16_t x, uint16_t y ) {
+	return (walls[y] & ( 1 << x ));
 }
 
 void MOUSE_UpdateWalls(uint16_t *maze, mouse_t mouse, bool front, bool right, bool left) {
@@ -126,10 +134,43 @@ void MOUSE_UpdateWalls(uint16_t *maze, mouse_t mouse, bool front, bool right, bo
 	}
 }
 
-bool MOUSE_IsMazeSolved() {
+bool MOUSE_IsMazeSolved(mouse_t mouse) {
+	if( (mouse.x == 7 || mouse.x == 8) && (mouse.y == 7 || mouse.y == 8) )
+		return true;
 	return false;
 }
 
+bool MOUSE_HasMouseReturned(mouse_t mouse) {
+	if( mouse.x == 0 && mouse.y == 0 )
+		return true;
+	return false;
+}
+
+void MOUSE_PathfinderFloodFill() {
+	
+
+	floodFill(7
+}
+
+void floodFill(uint16_t x, uint16_t y, uint16_t dist, uint16_t distance[16][16] uint16_t* maze) {
+	distance[x][y] = dist;
+	//Right
+	if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1)) 
+		floodFill(x+1, y, dist+1, &distance[16][16], &maze);
+	//Left
+	if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1)) 
+		floodFill(x-1, y, dist+1, &distance[16][16], &maze);
+	//Up
+	if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1)) 
+		floodFill(x, y-1, dist+1, &distance[16][16], &maze);
+	//Down
+	if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1)) 
+		floodFill(x, y+1, dist+1, &distance[16][16], &maze);
+}
+
+void MOUSE_PathfinderSolveMaze() {
+
+}
 /*
  * Moves the mouse by a single cell
  *
