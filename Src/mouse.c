@@ -4,10 +4,10 @@
 // maze[0] is the horizantal walls
 // maze[1] is the vertical walls
 uint16_t maze[2][16] = {0};
-coord_t currentCoord = {0};
-uint8_t currentDirection = NORTH;
+mouse_t mouse = {0, 0, EAST};
 
 void MOUSE_Init() {
+	
 }
 
 void MOUSE_MoveDistanceCM(float distance) {
@@ -24,7 +24,23 @@ void MOUSE_MoveDistanceCM(float distance) {
 	PWM_StopMotors();
 }
 
-void MOUSE_MoveForwardCell() {
+void MOUSE_MoveForwardCell(mouse_t* mouse) {
+	if(mouse->dir == NORTH && mouse->y != 0) {
+
+		mouse->y = mouse->y-1;
+	}
+	else if(mouse->dir == SOUTH && mouse->y != 15) {
+
+		mouse->y = mouse->y+1;
+	}
+	else if(mouse->dir == EAST && mouse->x != 15) {
+
+		mouse->x = mouse->x+1;
+	}
+	else if(mouse->dir == WEST && mouse->x != 0) {
+
+		mouse->x = mouse->x-1;
+	}
 }
 
 // FIXME
@@ -55,11 +71,59 @@ void MOUSE_Rotate90Deg(uint8_t direction) {
 	PWM_StopMotors();
 }
 
-void MOUSE_UpdateWalls() {
+mouse_t aboveCoord(mouse_t mouse) {
+	return { mouse.x, mouse.y-1, mouse.dir};
 }
 
-bool MOUSE_GetWall(uint8_t whichWall) {
-	return false;
+mouse_t leftCoord(mouse_t mouse) {
+	return { mouse.x-1, mouse.y, mouse.dir};
+}
+
+void MOUSE_AddWall(uint16_t* walls, mouse_t mouse) {
+	walls[mouse.y] = (walls[mouse.y] | ( 1 << mouse.x ));
+}
+
+bool MOUSE_GetWall(uint16_t *walls, mouse_t mouse ) {
+	return (walls[mouse.y] & ( 1 << mouse.x ));
+}
+
+void MOUSE_UpdateWalls(uint16_t *maze, mouse_t mouse, bool front, bool right, bool left) {
+	if( mouse.dir == NORTH )
+	{
+		if( front && mouse.y != 0 )
+			MOUSE_AddWall( &maze[HORZ], aboveCoord(mouse));
+		if( left && mouse.x != 0 )
+			MOUSE_AddWall( &maze[VERT], leftCoord(mouse));
+		if( right )
+			MOUSE_AddWall( &maze[VERT], mouse);
+	}
+	else if( mouse.dir == EAST )
+	{
+		if( left && mouse.y != 0 )
+			MOUSE_AddWall( &maze[HORZ], aboveCoord(mouse));
+		if( right )
+			MOUSE_AddWall( &maze[HORZ], mouse);
+		if( front )
+			MOUSE_AddWall( &maze[VERT], mouse);
+	}
+	else if( mouse.dir == SOUTH )
+	{
+		if( front )
+			MOUSE_AddWall( &maze[HORZ], mouse);
+		if( right && mouse.x != 0 )
+			MOUSE_AddWall( &maze[VERT], leftCoord(mouse));
+		if( left )
+			MOUSE_AddWall( &maze[VERT], mouse);
+	}
+	else if( mouse.dir == WEST )
+	{
+		if( right && mouse.y != 0 )
+			MOUSE_AddWall( &maze[HORZ], aboveCoord(mouse));
+		if( front && mouse.x != 0 )
+			MOUSE_AddWall( &maze[VERT], leftCoord(mouse));
+		if( left )
+			MOUSE_AddWall( &maze[HORZ], mouse);
+	}
 }
 
 bool MOUSE_IsMazeSolved() {
