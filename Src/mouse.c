@@ -221,8 +221,8 @@ void MOUSE_PathfinderFloodFill(uint16_t* distance[16][16], uint16_t* maze[2][16]
 	floodFill(8, 8, 0, &distance, &maze);
 }
 
-void floodFill(uint16_t x, uint16_t y, uint16_t dist, uint16_t distance[16][16], uint16_t* maze) {
-	distance[x][y] = dist;
+void floodFill(uint16_t x, uint16_t y, uint16_t distance[16][16], uint16_t* maze) {
+	/*distance[x][y] = dist;
 	//Right
 	if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1)) 
 		floodFill(x+1, y, dist+1, &distance[16][16], &maze);
@@ -235,6 +235,9 @@ void floodFill(uint16_t x, uint16_t y, uint16_t dist, uint16_t distance[16][16],
 	//Down
 	if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1)) 
 		floodFill(x, y+1, dist+1, &distance[16][16], &maze);
+*/
+	uint16_t min = 999;
+	
 }
 
 void MOUSE_PathfinderSolveMaze() {
