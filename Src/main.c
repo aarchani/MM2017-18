@@ -39,27 +39,25 @@ int main(void) {
 	HAL_Delay(2000);
 
 
-	float dist = 18.0;
+	float dist = 19.0;
 
-	for (int i = 0; i < 4; i++) {
-		//MOUSE_MoveDistanceCM(dist);
-		MOUSE_Rotate90Deg(CLOCKWISE);
-		HAL_Delay(500);
-	}
+	float distRight;
+	float distLeft;
+	float distFwd;
 
 
-	//PWM_SetSpeed(DIR_FWD, 0.05);
-	//initSurprise();
-
-	while (1) {
-		dist = ENC_GetAvgDistCM();
-	}
-
-	// TODO Uncomment when Maze Solving is fully implemented
-
-	//while (!MOUSE_IsMazeSolved()) {
-	//	MOUSE_LeftHandFollowStep();
+	//for (int i = 0; i < 4; i++) {
+	//	MOUSE_MoveDistanceCM(dist);
+	//	//MOUSE_Rotate90Deg(CLOCKWISE);
 	//	HAL_Delay(500);
+	//}
+	initSurprise();
+	MOUSE_RightHandDoofSolve();
+
+	//while(1) {
+	//	distRight = IR_GetDistance(IR_LED_FRONT_RIGHT);
+	//	distLeft = IR_GetDistance(IR_LED_LEFT);
+	//	distFwd = IR_GetDistance(IR_LED_RIGHT);
 	//}
 }
 

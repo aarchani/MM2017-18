@@ -24,7 +24,7 @@
 // The left/right wheel speed ratio needed to go straight
 #define SPEED_LR_RATIO 10.0/12
 
-typedef enum {WALL_LEFT, WALL_RIGHT, WALL_FRONT} wallDirection;
+typedef enum {WALL_FRONT, WALL_RIGHT, WALL_LEFT} wallDirection;
 typedef enum {NORTH, WEST, SOUTH, EAST} direction;
 
 
@@ -35,7 +35,12 @@ void MOUSE_MoveUntilWall();
 void MOUSE_MoveDistanceCM(float distance);
 void MOUSE_Rotate90Deg(uint8_t direction);
 
-void MOUSE_LeftHandFollowStep();
+void MOUSE_RightHandDoofSolve();
+
+int MOUSE_IsThereWall(uint8_t whichWall);
+
+// Solves the maze :)
+void MOUSE_PathFollower();
 
 uint16_t getNextMove();
 void floodFill(uint16_t x, uint16_t y);

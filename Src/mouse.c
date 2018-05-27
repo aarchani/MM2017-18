@@ -3,22 +3,27 @@
 #include "mouse.h"
 #include "stdbool.h"
 
-// maze[0] is the horizantal walls
-// maze[1] is the vertical walls
 uint16_t maze[2][16] = {0};
 mouse_t mouse = {0, 0, EAST};
-uint16_t distance[16][16] = {-1};
+uint16_t distance[16][16] = {{-1}};
 
 void MOUSE_Init() {
+	// Init the distances
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			distance[i][j] = abs(i-7) + abs(j-7);
+			distance[15-i][j] = distance[i][j];
+			distance[15-i][15-j] = distance[i][j];
+			distance[i][15-j] = distance[i][j];
+		}
+	}
 
-
-	//for(int i=0; i<16; i=i+1)
-	//{
-	//	maze[HORZ][i] = 0;
-	//	maze[VERT][i] = 32768;
-	//}
-	//maze[HORZ] = 65535;
-	//mouse = {0, 0, EAST};
+	// Init the maze
+	for (int i = 0; i < 16; i++) {
+		maze[VERT][i] = 32768;
+		maze[HORZ][i] = 0;
+	}
+	maze[HORZ][15] = 65535;
 }
 
 void MOUSE_MoveDistanceCM(float distance) {
@@ -30,8 +35,13 @@ void MOUSE_MoveDistanceCM(float distance) {
 	float distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
 	float distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
 
-	float distKP = 0.02;
-	float distKD = 1.0;
+	float irRightKP = 0.0007;
+	float irFrontKP = 5.0000;
+	float irRightInput;
+	float irFrontInput;
+
+	float distKP = 0.020;
+	float distKD = 0.0;
 
 	float distLeftError = distance - distLeft;
 	float distLeftErrOld = distLeftError;
@@ -56,6 +66,17 @@ void MOUSE_MoveDistanceCM(float distance) {
 	    distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
 	    distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
 
+	    irRightInput = IR_GetDistance(IR_LED_FRONT_RIGHT);
+	    irFrontInput = IR_GetDistance(IR_LED_RIGHT);
+
+		// If wall doesn't exist, don't use the IR corrective term
+		if (irRightInput < IR_RIGHT_THRESHOLD) {
+			irRightInput = 0;
+		}
+		else {
+			irRightInput = -(IR_RIGHT_SETPOINT - irRightInput) * irRightKP;
+		}
+
 		distLeftError = distance - distLeft;
 		distLeftErrorP = distLeftError * distKP;
 
@@ -63,9 +84,6 @@ void MOUSE_MoveDistanceCM(float distance) {
 		distLeftErrorD *= distKD;
 
 		distLeftSignal = distLeftErrorP + distLeftErrorD;
-
-		speedLeft =  min(distLeftSignal, maxSpeed);
-
 
 		distRightError = distance - distRight;
 		distRightErrorP = distRightError * distKP;
@@ -75,7 +93,18 @@ void MOUSE_MoveDistanceCM(float distance) {
 
 		distRightSignal = distRightErrorP + distRightErrorD;
 
-		speedRight = min(distRightSignal, maxSpeed);
+		// Add the corrective signal from the right IR Sensor
+		distRightSignal += irRightInput;
+
+		// Add the corrective signal from the front IR Sensor
+		if (irFrontInput >= IR_FRONT_THRESHOLD) {
+			distRightSignal /= irFrontKP;
+			distLeftSignal /= irFrontKP;
+		}
+
+		// Cap the speed to make sure the mouse doesn't fly away
+		speedLeft =  constrain(distLeftSignal,  -maxSpeed, maxSpeed);
+		speedRight = constrain(distRightSignal, -maxSpeed, maxSpeed);
 
 		PWM_SetPWMVector(MOTOR_LEFT,  speedLeft);
 		PWM_SetPWMVector(MOTOR_RIGHT, speedRight);
@@ -108,6 +137,9 @@ void MOUSE_MoveForwardCell(mouse_t* mouse) {
 
 		mouse->x = mouse->x-1;
 	}
+
+	float cellDist = 18.0;
+	MOUSE_MoveDistanceCM(cellDist);
 }
 
 // FIXME
@@ -117,8 +149,8 @@ void MOUSE_Rotate90Deg(uint8_t direction) {
 	float distKP = 0.10;
 	float distKD = 0.0;
 
-	float distance = 8.70;
-	float maxSpeed = 0.35;
+	float distance = 7.30;
+	float maxSpeed = 0.30;
 
 	float distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
 	float distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
@@ -295,6 +327,19 @@ void floodFill(uint16_t x, uint16_t y) {
 	}
 }
 
+int MOUSE_IsThereWall(uint8_t whichWall) {
+	switch (whichWall) {
+		case WALL_FRONT:
+			return IR_GetDistance(IR_LED_RIGHT) > IR_FRONT_THRESHOLD;
+		case WALL_LEFT:
+			return IR_GetDistance(IR_LED_LEFT) > IR_LEFT_THRESHOLD;
+			break;
+		case WALL_RIGHT:
+			return IR_GetDistance(IR_LED_FRONT_RIGHT) > IR_RIGHT_THRESHOLD;
+			break;
+	}
+}
+
 void MOUSE_FloodFill() {
 	
 	uint16_t frontWall = 0;
@@ -302,33 +347,43 @@ void MOUSE_FloodFill() {
     uint16_t leftWall = 0;
     uint16_t next;
     bool hasStarted = false;
+    int x = 0;
     while( !(mouse.x == 0 && mouse.y == 0) || !hasStarted) //myMouse->notDone())
     {
-		//Add IR sensor calls
+		// Detect the walls with IR
+    	frontWall = MOUSE_IsThereWall(WALL_FRONT);
+    	leftWall = MOUSE_IsThereWall(WALL_LEFT);
+    	rightWall = MOUSE_IsThereWall(WALL_RIGHT);
+
+    	// Update the internal data structure based on the walls
         MOUSE_UpdateWalls(frontWall, rightWall, leftWall);
+
         next = getSmallestNeighbor();
-        floodFill(mouse.x, mouse.y);
+        if (x++ != 0) floodFill(mouse.x, mouse.y);
         if( next == 0 )
         {
-            //MoveForward
+        	MOUSE_MoveForwardCell(&mouse);
             hasStarted = true;
         }
         else if( next == 1 )
         {
-            //TurnLeft
-            //MoveForward
+        	MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
+        	MOUSE_MoveForwardCell(&mouse);
             hasStarted = true;
         }
         else if( next == 2)
         {
-            //TurnRight
-            //MoveForward
+        	MOUSE_Rotate90Deg(CLOCKWISE);
+        	MOUSE_MoveForwardCell(&mouse);
             hasStarted = true;
         }
         else
         {
-            //Turn Around
+        	MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
+        	HAL_Delay(100);
+        	MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
         }
+	}
 }
 //0-forward, 1-left, 2-right, 3-uturn
 
@@ -430,7 +485,7 @@ int getSmallestNeighbor()
 
 
 
-void pathFollower(){
+void MOUSE_PathFollower(){
 	//myMouse->turn(2); turn 180
 	uint16_t next;
 	while(!MOUSE_IsMazeSolved())
@@ -560,18 +615,22 @@ uint16_t getNextMove()
  * Moves the mouse by a single cell
  *
  */
-void MOUSE_LeftHandFollowStep() {
+void MOUSE_RightHandDoofSolve() {
 	//MOUSE_UpdateWalls();
 
-	// If there isn't a wall on the left, move to the left cell
-	//if (!MOUSE_GetWall(WALL_LEFT)) {
-	//	MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
-	//	MOUSE_MoveForwardCell();
-	//}
-	//else if (!MOUSE_GetWall(WALL_FRONT)) {
-	//	MOUSE_MoveForwardCell();
-	//}
-	//else {
-	//	MOUSE_Rotate90Deg(CLOCKWISE);
-	//}
+    while(1) {
+		// If there isn't a wall on the right, move to the right cell
+		if (!MOUSE_IsThereWall(WALL_RIGHT)) {
+			MOUSE_Rotate90Deg(CLOCKWISE);
+			MOUSE_MoveForwardCell(&mouse);
+		}
+		else if (!MOUSE_IsThereWall(WALL_FRONT)) {
+			// If there isn't a wall up ahead, move forwards
+			MOUSE_MoveForwardCell(&mouse);
+		}
+		else {
+			// Otherwise turn counter clockwise
+			MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
+		}
+	}
 }
