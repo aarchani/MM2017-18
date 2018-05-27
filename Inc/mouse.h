@@ -36,6 +36,7 @@ void MOUSE_LeftHandFollowStep();
 
 typedef struct {
 	uint16_t x, y;
-} coord_t;
+	uint8_t dir;
+} mouse_t;
 
 #endif
