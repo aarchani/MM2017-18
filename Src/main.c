@@ -39,12 +39,15 @@ int main(void) {
 	HAL_Delay(2000);
 
 
-	//initSurprise();
 	float dist = 18.0;
 
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 4; i++) {
 		MOUSE_MoveDistanceCM(dist);
+		HAL_Delay(1000);
 	}
+
+	//PWM_SetSpeed(DIR_FWD, 0.05);
+	//initSurprise();
 
 	while (1) {
 		dist = ENC_GetAvgDistCM();

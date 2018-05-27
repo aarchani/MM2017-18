@@ -24,11 +24,11 @@ void MOUSE_Init( uint16_t maze[2][16], mouse_t *mouse) {
 void MOUSE_MoveDistanceCM(float distance) {
 	ENC_ResetEncoders();
 
-	uint32_t maxSpeed = 30;
-	float errorMargin = 0.1;
+	float maxSpeed = 0.15;
+	float errorMargin = 0.001;
 
-	float turnKP = 1.0;
-	float turnKD = 10.0;
+	float turnKP = 0.01;
+	float turnKD = 0.0;
 
 	float avgDist = ENC_GetAvgDistCM();
 	float turnError = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
@@ -37,8 +37,9 @@ void MOUSE_MoveDistanceCM(float distance) {
 	float turnErrOld = turnError;
 	float turnControlSignal;
 
-	float distKP = 0.35;
-	float distKD = 0.5;
+	float distKP = 0.50;
+	float distKD = 0.0;
+
 	float distError = distance - avgDist;
 	float distErrOld = distError;
 	float distErrorP;
@@ -47,8 +48,8 @@ void MOUSE_MoveDistanceCM(float distance) {
 
 	float speedLeft, speedRight;
 
-	//while (fabs(distError) > errorMargin) {
-	while (1) {
+	while (fabs(distError) > errorMargin) {
+	//while (1) {
 		distError = distance - avgDist;
 		distErrorP = distError * distKP;
 
@@ -64,8 +65,8 @@ void MOUSE_MoveDistanceCM(float distance) {
 		distControlSignal = distErrorP + distErrorD;
 		turnControlSignal = turnErrorP + turnErrorD;
 
-		speedLeft  = maxSpeed ;//- turnControlSignal;
-		speedRight = maxSpeed ;//+ turnControlSignal;
+		speedLeft  = maxSpeed ; // - turnControlSignal;
+		speedRight = maxSpeed ; // + turnControlSignal;
 
 		//speedLeft = constrain(speedLeft * distErrTotal, -maxSpeed, maxSpeed);
 		//speedRight = constrain(speedRight * distErrTotal, -maxSpeed, maxSpeed);
