@@ -44,6 +44,23 @@ void PWM_SetPWM(uint32_t channel, uint16_t val) {
 	}
 }
 
+void PWM_SetPWMVector(uint32_t leftRight, uint16_t val) {
+	switch(leftRight) {
+		case MOTOR_LEFT:
+			if (val > 0)
+				PWM_SetPWM(PWM_LEFT_FWD, val);
+			else
+				PWM_SetPWM(PWM_LEFT_REV, val);
+			break;
+		case MOTOR_RIGHT:
+			if (val > 0)
+				PWM_SetPWM(PWM_RIGHT_FWD, val);
+			else
+				PWM_SetPWM(PWM_RIGHT_REV, val);
+			break;
+	}
+}
+
 /*
  * Kills the PWM for a channel of TIM4
  *

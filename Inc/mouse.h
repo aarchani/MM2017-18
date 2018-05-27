@@ -7,6 +7,8 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
+#define min(a,b) ((a)<(b)?(a):(b))
+
 #include "motors.h"
 #include "encoders.h"
 #include "irled.h"
@@ -36,6 +38,7 @@ void MOUSE_LeftHandFollowStep();
 
 typedef struct {
 	uint16_t x, y;
-} coord_t;
+	uint8_t dir;
+} mouse_t;
 
 #endif

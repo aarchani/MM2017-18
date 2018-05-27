@@ -1,3 +1,5 @@
+#include <tgmath.h>
+
 #include "mouse.h"
 #include "stdbool.h"
 
@@ -9,27 +11,68 @@ mouse_t mouse = {0, 0, EAST};
 void MOUSE_Init( uint16_t maze[2][16], mouse_t *mouse) {
 	
 
-	for(int i=0; i<16; i=i+1)
-	{
-		maze[HORZ][i] = 0;
-		maze[VERT][i] = 32768;
-	}
-	maze[HORZ] = 65535;
-	mouse = {0, 0, EAST};
+	//for(int i=0; i<16; i=i+1)
+	//{
+	//	maze[HORZ][i] = 0;
+	//	maze[VERT][i] = 32768;
+	//}
+	//maze[HORZ] = 65535;
+	//mouse = {0, 0, EAST};
 }
 
 void MOUSE_MoveDistanceCM(float distance) {
 	ENC_ResetEncoders();
 
-	uint32_t speed = 13;
+	uint32_t maxSpeed = 30;
+	float errorMargin = 0.00000000000001;
 
-	PWM_SetPWM(PWM_LEFT_FWD, speed * SPEED_LR_RATIO);
-	PWM_SetPWM(PWM_RIGHT_FWD, speed);
+	float turnKP = 1.0;
+	float turnKD = 10.0;
 
-	// TODO Replace with PID
-	while (ENC_GetEncoderDistanceCM(ENCODER_LEFT) < distance);
+	float avgDist = ENC_GetAvgDistCM();
+	float turnErrorP = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+	float turnErrorD;
+	float turnErrOld = turnErrorP;
+	float turnErrTotal;
 
-	PWM_StopMotors();
+	float distKP = 0.35;
+	float distKD = 0.5;
+	float distErrorP = distance - avgDist;
+	float distErrorD;
+	float distErrOld = distErrorP;
+	float distErrTotal;
+
+	float speedLeft, speedRight;
+
+	//while (fabs(distErrorP) > errorMargin) {
+	while (1) {
+		distErrorP = distance - avgDist;
+		distErrorP *= distKP;
+
+		distErrorD = distErrorP - distErrOld;
+		distErrorD *= distKD;
+
+		turnErrorP = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+		turnErrorP *= turnKP;
+
+		turnErrorD = turnErrorP - turnErrOld;
+		turnErrorD *= turnKD;
+
+		distErrTotal = distErrorP + distErrorD;
+		turnErrTotal = turnErrorP + turnErrorD;
+
+		speedLeft  = maxSpeed - turnErrTotal;
+		speedRight = maxSpeed + turnErrTotal;
+
+		PWM_SetPWMVector(MOTOR_LEFT,  min(speedLeft  * distErrTotal, maxSpeed));
+		PWM_SetPWMVector(MOTOR_RIGHT, min(speedRight * distErrTotal, maxSpeed));
+
+		avgDist = ENC_GetAvgDistCM();
+		turnErrOld = turnErrorP;
+		distErrOld = distErrorP;
+	}
+
+	//PWM_StopMotors();
 }
 
 void MOUSE_MoveForwardCell(mouse_t* mouse) {
@@ -80,11 +123,21 @@ void MOUSE_Rotate90Deg(uint8_t direction) {
 }
 
 mouse_t aboveCoord(mouse_t mouse) {
-	return { mouse.x, mouse.y-1, mouse.dir};
+	mouse_t ret;
+	ret.x = mouse.x;
+	ret.y = mouse.y - 1;
+	ret.dir = mouse.dir;
+
+	return ret;
 }
 
 mouse_t leftCoord(mouse_t mouse) {
-	return { mouse.x-1, mouse.y, mouse.dir};
+	mouse_t ret;
+	ret.x = mouse.x - 1;
+	ret.y = mouse.y - 1;
+	ret.dir = mouse.dir;
+
+	return ret;
 }
 
 void MOUSE_AddWall(uint16_t* walls, mouse_t mouse) {
@@ -149,23 +202,22 @@ bool MOUSE_HasMouseReturned(mouse_t mouse) {
 void MOUSE_PathfinderFloodFill() {
 	
 
-	floodFill(7
 }
 
-void floodFill(uint16_t x, uint16_t y, uint16_t dist, uint16_t distance[16][16] uint16_t* maze) {
-	distance[x][y] = dist;
-	//Right
-	if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1)) 
-		floodFill(x+1, y, dist+1, &distance[16][16], &maze);
-	//Left
-	if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1)) 
-		floodFill(x-1, y, dist+1, &distance[16][16], &maze);
-	//Up
-	if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1)) 
-		floodFill(x, y-1, dist+1, &distance[16][16], &maze);
-	//Down
-	if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1)) 
-		floodFill(x, y+1, dist+1, &distance[16][16], &maze);
+void floodFill(uint16_t x, uint16_t y, uint16_t dist, uint16_t distance[16][16], uint16_t* maze) {
+	//distance[x][y] = dist;
+	////Right
+	//if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1))
+	//	floodFill(x+1, y, dist+1, &distance[16][16], &maze);
+	////Left
+	//if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1))
+	//	floodFill(x-1, y, dist+1, &distance[16][16], &maze);
+	////Up
+	//if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1))
+	//	floodFill(x, y-1, dist+1, &distance[16][16], &maze);
+	////Down
+	//if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1))
+	//	floodFill(x, y+1, dist+1, &distance[16][16], &maze);
 }
 
 void MOUSE_PathfinderSolveMaze() {
@@ -176,17 +228,17 @@ void MOUSE_PathfinderSolveMaze() {
  *
  */
 void MOUSE_LeftHandFollowStep() {
-	MOUSE_UpdateWalls();
+	//MOUSE_UpdateWalls();
 
-	// If there isn't a wall on the left, move to the left cell
-	if (!MOUSE_GetWall(WALL_LEFT)) {
-		MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
-		MOUSE_MoveForwardCell();
-	}
-	else if (!MOUSE_GetWall(WALL_FRONT)) {
-		MOUSE_MoveForwardCell();
-	}
-	else {
-		MOUSE_Rotate90Deg(CLOCKWISE);
-	}
+	//// If there isn't a wall on the left, move to the left cell
+	//if (!MOUSE_GetWall(WALL_LEFT)) {
+	//	MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
+	//	MOUSE_MoveForwardCell();
+	//}
+	//else if (!MOUSE_GetWall(WALL_FRONT)) {
+	//	MOUSE_MoveForwardCell();
+	//}
+	//else {
+	//	MOUSE_Rotate90Deg(CLOCKWISE);
+	//}
 }

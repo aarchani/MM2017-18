@@ -13,9 +13,13 @@
 #define DIR_FWD	0
 #define DIR_REV	1
 
+#define MOTOR_LEFT	0
+#define MOTOR_RIGHT 1
+
 void PWM_Init();
 
 void PWM_SetPWM(uint32_t channel, uint16_t val);
+void PWM_SetPWMVector(uint32_t leftRight, uint16_t val);
 void PWM_StopPWM(uint32_t channel);
 
 void PWM_SetSpeed(uint8_t direction, uint16_t speed);

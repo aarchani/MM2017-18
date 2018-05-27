@@ -40,6 +40,16 @@ float ENC_GetEncoderDistanceCM(TIM_TypeDef* encoderSide) {
 }
 
 /*
+ * Returns the average distance travelled of the 2 encoders
+ */
+float ENC_GetAvgDistCM() {
+	float distLeft  = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
+	float distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+
+	return (distLeft + distRight) / 2;
+}
+
+/*
  * Resets the encoder internal counter for a given wheel.
  *
  * Does nothing if an invalid encoderSide is specified.

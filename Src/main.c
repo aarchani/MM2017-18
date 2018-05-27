@@ -40,15 +40,17 @@ int main(void) {
 
 
 	//initSurprise();
-	float dist = 30.0;
-	float distLeft, distRight;
-	//MOUSE_MoveDistanceCM(dist);
-	MOUSE_Rotate90Deg(CLOCKWISE);
-	ENC_ResetEncoders();
-	//while(1) {
-	distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
-	distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+	float dist = 18.0;
+
+	for (int i = 0; i < 1; i++) {
+		MOUSE_MoveDistanceCM(dist);
+	}
+
+	//while (1) {
+	//	dist = ENC_GetAvgDistCM();
 	//}
+
+	// TODO Uncomment when Maze Solving is fully implemented
 
 	//while (!MOUSE_IsMazeSolved()) {
 	//	MOUSE_LeftHandFollowStep();
