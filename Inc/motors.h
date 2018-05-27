@@ -18,11 +18,11 @@
 
 void PWM_Init();
 
-void PWM_SetPWM(uint32_t channel, uint16_t val);
-void PWM_SetPWMVector(uint32_t leftRight, uint16_t val);
+void PWM_SetPWM(uint32_t channel, float val);
+void PWM_SetPWMVector(uint32_t leftRight, float val);
 void PWM_StopPWM(uint32_t channel);
 
-void PWM_SetSpeed(uint8_t direction, uint16_t speed);
+void PWM_SetSpeed(uint8_t direction, float speed);
 void PWM_StopMotors();
 
 void PWM_SetPrescaler(uint32_t prescaler);
