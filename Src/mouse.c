@@ -457,6 +457,85 @@ void pathFollower(){
 	}
 }
 
+//return 0 for moveForward, 1 for left turn, 2 for right turn, 3 for uturn
+uint16_t getNextMove()
+{
+    if( direction == NORTH)
+    {   
+        if( mouse.y != 0)
+            if( !MOUSE_GetWall(&maze[HORZ],mouse.y-1, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y-1]+1))
+            {
+                return 0;
+            }
+        if( mouse.x != 0)
+            if( !MOUSE_GetWall(&maze[VERT],mouse.y, mouse.x-1) && (distance[mouse.x][mouse.y] == distance[mouse.x-1][mouse.y]+1))
+            {
+                return 1;
+            }
+        if( mouse.x != 15) 
+            if( !MOUSE_GetWall(&maze[VERT],mouse.y, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x+1][mouse.y]+1))
+            {
+                return 2;
+            }
+    }   
+
+    if( direction == SOUTH)
+    {   
+        if( mouse.y != 15) 
+            if( !MOUSE_GetWall(&maze[HORZ],mouse.y, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y+1]+1))
+            {
+                return 0;
+            }
+        if( mouse.x != 0)
+            if( !MOUSE_GetWall(&maze[VERT],mouse.y, mouse.x-1) && (distance[mouse.x][mouse.y] == distance[mouse.x-1][mouse.y]+1))
+            {
+                return 2;
+            }
+        if( mouse.x != 15) 
+            if( !MOUSE_GetWall(&maze[VERT],mouse.y, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x+1][mouse.y]+1))
+            {
+                return 1;
+            }
+    }
+    if( direction == EAST)
+    {   
+        if( mouse.y != 0)
+            if( !MOUSE_GetWall(&maze[HORZ],mouse.y-1, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y-1]+1))
+            {
+                return 1;
+            }
+        if( mouse.y != 15)
+            if( !MOUSE_GetWall(&maze[HORZ],mouse.y, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y+1]+1))
+            {
+                return 2;
+            }
+        if( mouse.x != 15)
+            if( !MOUSE_GetWall(&maze[VERT],mouse.y, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x+1][mouse.y]+1))
+            {
+                return 0;
+            }
+    }
+
+    if( direction == WEST)
+    {
+        if( mouse.y != 0)
+            if( !MOUSE_GetWall(&maze[HORZ],mouse.y-1, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y-1]+1))
+            {
+                return 2;
+            }
+        if( mouse.x != 0)
+            if( !MOUSE_GetWall(&maze[VERT],mouse.y, mouse.x-1) && (distance[mouse.x][mouse.y] == distance[mouse.x-1][mouse.y]+1))
+            {
+                return 0;
+            }
+        if( mouse.y != 15)
+            if( !MOUSE_GetWall(&maze[HORZ],mouse.y, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y+1]+1))
+            {
+                return 1;
+            }
+    }
+    return 3;
+}
 
 /*
  * Moves the mouse by a single cell
