@@ -105,5 +105,5 @@ int main()
 	ffMouse.FF();
 	ffMouse.inMaze.printFF(ffMouse.vert, ffMouse.horz, ffMouse.direction, ffMouse.distance); 
 	pathFollower(&ffMouse);
-	ffMouse.dfs();
+	//ffMouse.dfs();
 }
