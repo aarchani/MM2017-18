@@ -3,6 +3,8 @@
 #include <iostream>
 #include <iomanip>
 #include <stack>
+#include <unistd.h>
+
 using namespace std;
 
 struct coord
@@ -53,20 +55,29 @@ mouse()
 	inMaze.MazeFull();//Initiallizing a fullmaze for dfs algorithm
 	for(int i = 0; i < 16; i++)
 	{
-		for(int j = 0; j < 15; j++)
+		for(int j = 0; j < 16; j++)
 		{
-			distance[i][j] = -1;
+			distance[i][j] = 999;
 		}
 	}
+//	distance[16][16] = {999};
 }
+
 mouse(int x)
 {
 
 	direction = 'E';//Initial direction in maze is east
 	vert = 0;//Starting at position 0,0
 	horz = 0;
+	for(int i = 0; i < 16; i++)
+	{
+		for(int j = 0; j < 16; j++)
+		{
+			distance[i][j] = 999;
+		}
+	}
 	//Initiallizing an empty maze for floodfill algorithm
-	for( int i = 0; i < 8; i++)
+/*	for( int i = 0; i < 8; i++)
 	{
 		for( int j = 0; j < 8; j++ )
 		{
@@ -79,8 +90,8 @@ mouse(int x)
 			distance[i][15-j] = distance[i][j];
 		//	cout << "i= " << i << " j= " << 15-j << " : " << distance[i][15-j] << endl;
 		}
-	}
-
+	}*/
+// distance[16][16] = {999};
 }
 
 void print()
@@ -296,6 +307,205 @@ void updateWallsRemove(unsigned short front, unsigned short right, unsigned shor
 
 	}	
 
+}
+
+void floodFill(unsigned short x, unsigned short y, unsigned short dist)
+{
+	distance[x][y] = dist;
+//	inMaze.printFF(0, 0, 'N', distance);
+//	usleep(90000);
+	if( x != 15 )
+		if( !inMaze.getVWall(y,x) && (dist < distance[x+1][y]))
+			floodFill(x+1, y, dist+1);
+	if( x != 0 )
+		if( !inMaze.getVWall(y,x-1) && (dist < distance[x-1][y] ))
+			floodFill(x-1, y, dist+1);
+	if( y != 15 )
+		if( !inMaze.getHWall(y,x)  && (dist < distance[x][y+1]))
+			floodFill(x, y+1, dist+1);
+	if( y != 0 )
+		if( !inMaze.getHWall(y-1,x)  && (dist < distance[x][y-1] ))
+			floodFill(x, y-1, dist+1); 
+}
+
+void FF()
+{
+	distance[7][7] = 0;
+	distance[7][8] = 0;
+	distance[8][7] = 0;
+	distance[8][8] = 0;
+
+	floodFill(7, 7, 0);
+	floodFill(7, 8, 0);
+	floodFill(8, 7, 0);
+	floodFill(8, 8, 0);
+
+}
+
+//return 0 for moveForward, 1 for left turn, 2 for right turn, 3 for uturn
+int getNextMove()
+{
+	unsigned short x = horz;
+	unsigned short y = vert;
+	if( direction == 'N')
+	{
+		if( vert != 0)
+			if( !inMaze.getHWall(vert-1, horz) && (distance[x][y] == distance[x][y-1]+1))
+			{
+				return 0;
+			}
+		if( horz != 0)
+			if( !inMaze.getVWall(vert, horz-1) && (distance[x][y] == distance[x-1][y]+1))
+			{
+				return 1;
+			}
+		if( horz != 15)
+			if( !inMaze.getVWall(vert, horz) && (distance[x][y] == distance[x+1][y]+1))
+			{
+				return 2;
+			}
+	}
+
+	if( direction == 'S')
+	{
+		if( vert != 15)
+			if( !inMaze.getHWall(vert, horz) && (distance[x][y] == distance[x][y+1]+1))
+			{
+				return 0;
+			}
+		if( horz != 0)
+			if( !inMaze.getVWall(vert, horz-1) && (distance[x][y] == distance[x-1][y]+1))
+			{
+				return 2;
+			}
+		if( horz != 15)
+			if( !inMaze.getVWall(vert, horz) && (distance[x][y] == distance[x+1][y]+1))
+			{
+				return 1;
+			}
+	}
+
+	if( direction == 'E')
+	{
+		if( vert != 0)
+			if( !inMaze.getHWall(vert-1, horz) && (distance[x][y] == distance[x][y-1]+1))
+			{
+				return 1;
+			}
+		if( vert != 15)
+			if( !inMaze.getHWall(vert, horz) && (distance[x][y] == distance[x][y+1]+1))
+			{
+				return 2;
+			}
+		if( horz != 15)
+			if( !inMaze.getVWall(vert, horz) && (distance[x][y] == distance[x+1][y]+1))
+			{
+				return 0;
+			}
+	}
+
+	if( direction == 'W')
+	{
+		if( vert != 0)
+			if( !inMaze.getHWall(vert-1, horz) && (distance[x][y] == distance[x][y-1]+1))
+			{
+				return 2;
+			}
+		if( horz != 0)
+			if( !inMaze.getVWall(vert, horz-1) && (distance[x][y] == distance[x-1][y]+1))
+			{
+				return 0;
+			}
+		if( vert != 15)
+			if( !inMaze.getHWall(vert, horz) && (distance[x][y] == distance[x][y+1]+1))
+			{
+				return 1;
+			}
+	}
+	return 3;
+}
+
+//return 0 for moveForward, 1 for left turn, 2 for right turn, 3 for uturn
+int getNextReturnMove()
+{
+	unsigned short x = horz;
+	unsigned short y = vert;
+	if( direction == 'N')
+	{
+		if( vert != 0)
+			if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] == 999))
+			{
+				return 0;
+			}
+		if( horz != 0)
+			if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] == 999))
+			{
+				return 1;
+			}
+		if( horz != 15)
+			if( !inMaze.getVWall(vert, horz) && ( distance[x+1][y] == 999))
+			{
+				return 2;
+			}
+	}
+
+	if( direction == 'S')
+	{
+		if( vert != 15)
+			if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] == 999))
+			{
+				return 0;
+			}
+		if( horz != 0)
+			if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] == 999))
+			{
+				return 2;
+			}
+		if( horz != 15)
+			if( !inMaze.getVWall(vert, horz) && (distance[x+1][y] == 999))
+			{
+				return 1;
+			}
+	}
+
+	if( direction == 'E')
+	{
+		if( vert != 0)
+			if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] == 999))
+			{
+				return 1;
+			}
+		if( vert != 15)
+			if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] == 999))
+			{
+				return 2;
+			}
+		if( horz != 15)
+			if( !inMaze.getVWall(vert, horz) && (distance[x+1][y] == 999))
+			{
+				return 0;
+			}
+	}
+
+	if( direction == 'W')
+	{
+		if( vert != 0)
+			if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] == 999))
+			{
+				return 2;
+			}
+		if( horz != 0)
+			if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] == 999))
+			{
+				return 0;
+			}
+		if( vert != 15)
+			if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] == 999))
+			{
+				return 1;
+			}
+	}
+	return 3;
 }
 
 void dfs()

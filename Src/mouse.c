@@ -7,6 +7,7 @@
 // maze[1] is the vertical walls
 uint16_t maze[2][16] = {0};
 mouse_t mouse = {0, 0, EAST};
+uint16_t distance[16][16] = {-1};
 
 void MOUSE_Init( uint16_t maze[2][16], mouse_t *mouse) {
 	
@@ -199,25 +200,32 @@ bool MOUSE_HasMouseReturned(mouse_t mouse) {
 	return false;
 }
 
-void MOUSE_PathfinderFloodFill() {
-	
+void MOUSE_PathfinderFloodFill(uint16_t* distance[16][16], uint16_t* maze[2][16]) {
+	distance[7][7] = 0;
+	distance[7][8] = 0;
+	distance[8][7] = 0;
+	distance[8][8] = 0;
 
+	floodFill(7, 7, 0, &distance, &maze);
+	floodFill(7, 8, 0, &distance, &maze);
+	floodFill(8, 7, 0, &distance, &maze);
+	floodFill(8, 8, 0, &distance, &maze);
 }
 
 void floodFill(uint16_t x, uint16_t y, uint16_t dist, uint16_t distance[16][16], uint16_t* maze) {
-	//distance[x][y] = dist;
-	////Right
-	//if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1))
-	//	floodFill(x+1, y, dist+1, &distance[16][16], &maze);
-	////Left
-	//if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1))
-	//	floodFill(x-1, y, dist+1, &distance[16][16], &maze);
-	////Up
-	//if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1))
-	//	floodFill(x, y-1, dist+1, &distance[16][16], &maze);
-	////Down
-	//if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1))
-	//	floodFill(x, y+1, dist+1, &distance[16][16], &maze);
+	distance[x][y] = dist;
+	//Right
+	if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1)) 
+		floodFill(x+1, y, dist+1, &distance[16][16], &maze);
+	//Left
+	if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1)) 
+		floodFill(x-1, y, dist+1, &distance[16][16], &maze);
+	//Up
+	if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1)) 
+		floodFill(x, y-1, dist+1, &distance[16][16], &maze);
+	//Down
+	if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1)) 
+		floodFill(x, y+1, dist+1, &distance[16][16], &maze);
 }
 
 void MOUSE_PathfinderSolveMaze() {

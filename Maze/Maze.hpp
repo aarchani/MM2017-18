@@ -129,8 +129,14 @@ void printFF(unsigned short vert, unsigned short horz, unsigned char orientation
 			else if( ( (x == 7) || (x == 8) ) && ((y == 7) || (y == 8)) )//print the goal 
 				cout << goal;
 
-			else cout << setfill('0') << setw(3) << flood[y][x];//print flood value
-
+			else if ( flood[y][x] != 999)
+			{
+				cout << setfill('0') << setw(3) << flood[y][x];//print flood value
+			}
+			else
+			{
+				cout << "   ";
+			}
 			if( (verticle[x] & pow(2,y)) != 0)// check if there is a wall here
 			{
 				cout << vWall;//if wall print line
