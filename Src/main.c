@@ -41,7 +41,7 @@ int main(void) {
 
 	float dist = 18.0;
 
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 4; i++) {
 		//MOUSE_MoveDistanceCM(dist);
 		MOUSE_Rotate90Deg(CLOCKWISE);
 		HAL_Delay(500);

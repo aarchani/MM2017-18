@@ -114,11 +114,11 @@ void MOUSE_MoveForwardCell(mouse_t* mouse) {
 void MOUSE_Rotate90Deg(uint8_t direction) {
 	ENC_ResetEncoders();
 
-	float distKP = 0.02;
-	float distKD = 1.0;
+	float distKP = 0.10;
+	float distKD = 0.0;
 
-	float distance = 5;
-	uint32_t maxSpeed = 20;
+	float distance = 8.70;
+	float maxSpeed = 0.35;
 
 	float distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
 	float distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
@@ -166,8 +166,8 @@ void MOUSE_Rotate90Deg(uint8_t direction) {
 		distLeftSignal = distLeftErrorP;
 		distRightSignal = distRightErrorP;
 
-		speedLeft  = min(distLeftSignal, maxSpeed);
-		speedRight = min(distRightSignal, maxSpeed);
+		speedLeft  = constrain(distLeftSignal,  -maxSpeed, maxSpeed);
+		speedRight = constrain(distRightSignal, -maxSpeed, maxSpeed);
 
 		PWM_SetPWMVector(MOTOR_LEFT,  speedLeft);
 		PWM_SetPWMVector(MOTOR_RIGHT, speedRight);
