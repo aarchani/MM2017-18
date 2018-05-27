@@ -37,6 +37,9 @@ void MOUSE_Rotate90Deg(uint8_t direction);
 
 void MOUSE_LeftHandFollowStep();
 
+uint16_t getNextMove();
+void floodFill(uint16_t x, uint16_t y);
+
 typedef struct {
 	uint16_t x, y;
 	uint8_t dir;

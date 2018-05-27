@@ -113,25 +113,70 @@ void MOUSE_MoveForwardCell(mouse_t* mouse) {
 // FIXME
 void MOUSE_Rotate90Deg(uint8_t direction) {
 	ENC_ResetEncoders();
-	float distance = 5;
-	uint32_t speed = 20;
 
-	float distLeft  = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
+	float distKP = 0.02;
+	float distKD = 1.0;
+
+	float distance = 5;
+	uint32_t maxSpeed = 20;
+
+	float distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
 	float distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
 
-	switch (direction) {
-		case CLOCKWISE:
-			PWM_SetPWM(PWM_LEFT_FWD, speed * SPEED_LR_RATIO);
-			PWM_SetPWM(PWM_RIGHT_REV, speed);
-			while (distLeft < distance
-				   || -distRight > -distance) {
+	float distLeftError = distance - distLeft;
+	float distLeftErrOld = distLeftError;
+	float distLeftErrorP;
+	float distLeftErrorD;
+	float distLeftSignal;
 
-				distLeft  = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
-				distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
-			}
-			break;
+	float distRightError = distance - distRight;
+	float distRightErrOld = distRightError;
+	float distRightErrorP;
+	float distRightErrorD;
+	float distRightSignal;
 
-		case COUNTERCLOCKWISE:
+	float errorMargin = 0.001;
+
+	float speedLeft, speedRight;
+
+	uint32_t timeoutStart = HAL_GetTick();
+	uint32_t currentTick = HAL_GetTick();
+	uint32_t timeout = 1000;
+
+	float leftMultiplier = 1.0;
+	float rightMultiplier = 1.0;
+
+	if (direction == CLOCKWISE) {
+		rightMultiplier = -1.0;
+	}
+	else {
+		leftMultiplier = -1.0;
+	}
+
+	while (fabs(distLeftError) > errorMargin || fabs(distRightError) > errorMargin) {
+		distLeft  = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
+		distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+
+		distLeftError = (distance * leftMultiplier) - distLeft;
+		distRightError = (distance * rightMultiplier) - distRight;
+
+		distLeftErrorP = distLeftError * distKP;
+		distRightErrorP = distRightError * distKP;
+
+		distLeftSignal = distLeftErrorP;
+		distRightSignal = distRightErrorP;
+
+		speedLeft  = min(distLeftSignal, maxSpeed);
+		speedRight = min(distRightSignal, maxSpeed);
+
+		PWM_SetPWMVector(MOTOR_LEFT,  speedLeft);
+		PWM_SetPWMVector(MOTOR_RIGHT, speedRight);
+
+		distRightErrOld = distRightError;
+		distLeftErrOld = distLeftError;
+
+		currentTick = HAL_GetTick();
+		if (currentTick - timeoutStart > timeout)
 			break;
 	}
 
@@ -156,12 +201,12 @@ mouse_t leftCoord() {
 	return ret;
 }
 
-void MOUSE_AddWall(uint16_t* walls, mouse_t mouse) {
-	walls[mouse.y] = (walls[mouse.y] | ( 1 << mouse.x ));
+void MOUSE_AddWall(uint16_t (*walls)[16], mouse_t mouse) {
+	*walls[mouse.y] = (*walls[mouse.y] | ( 1 << mouse.x ));
 }
 
-bool MOUSE_GetWall(uint16_t* walls, uint16_t x, uint16_t y ) {
-	return (walls[y] & ( 1 << x ));
+bool MOUSE_GetWall(uint16_t (*walls)[16], uint16_t x, uint16_t y ) {
+	return (*walls[y] & ( 1 << x ));
 }
 
 void MOUSE_UpdateWalls(bool front, bool right, bool left) {
@@ -215,18 +260,6 @@ bool MOUSE_HasMouseReturned() {
 	return false;
 }
 
-void MOUSE_PathfinderFloodFill(uint16_t* distance[16][16], uint16_t* maze[2][16]) {
-	distance[7][7] = 0;
-	distance[7][8] = 0;
-	distance[8][7] = 0;
-	distance[8][8] = 0;
-
-	floodFill(7, 7, 0, &distance, &maze);
-	floodFill(7, 8, 0, &distance, &maze);
-	floodFill(8, 7, 0, &distance, &maze);
-	floodFill(8, 8, 0, &distance, &maze);
-}
-
 void floodFill(uint16_t x, uint16_t y) {
 	/*distance[x][y] = dist;
 	//Right
@@ -278,38 +311,38 @@ void floodFill(uint16_t x, uint16_t y) {
 
 void MOUSE_FloodFill() {
 	
-	uint16_t frontWall = 0;
-    uint16_t rightWall = 0;
-    uint16_t leftWall = 0;
-    uint16_t next;
-    bool hasStarted = false;
-    while( !(mouse.x == 0 && mouse.y == 0) || !hasStarted) //myMouse->notDone())
-    {
-		//Add IR sensor calls
-        MOUSE_UpdateWalls(frontWall, rightWall, leftWall);
-        next = myMouse->getSmallestNeighbor();
-        myMouse->floodFill(mouse.x, mouse.y);
-        if( next == 0 )
-        {
-            //MoveForward
-            hasStarted = true;
-        }
-        else if( next == 1 )
-        {
-            //TurnLeft
-            //MoveForward
-            hasStarted = true;
-        }
-        else if( next == 2)
-        {
-            //TurnRight
-            //MoveForward
-            hasStarted = true;
-        }
-        else
-        {
-            //Turn Around
-        }
+	//uint16_t frontWall = 0;
+    //uint16_t rightWall = 0;
+    //uint16_t leftWall = 0;
+    //uint16_t next;
+    //bool hasStarted = false;
+    //while( !(mouse.x == 0 && mouse.y == 0) || !hasStarted) //myMouse->notDone())
+    //{
+	//	//Add IR sensor calls
+    //    MOUSE_UpdateWalls(frontWall, rightWall, leftWall);
+    //    next = myMouse->getSmallestNeighbor();
+    //    myMouse->floodFill(mouse.x, mouse.y);
+    //    if( next == 0 )
+    //    {
+    //        //MoveForward
+    //        hasStarted = true;
+    //    }
+    //    else if( next == 1 )
+    //    {
+    //        //TurnLeft
+    //        //MoveForward
+    //        hasStarted = true;
+    //    }
+    //    else if( next == 2)
+    //    {
+    //        //TurnRight
+    //        //MoveForward
+    //        hasStarted = true;
+    //    }
+    //    else
+    //    {
+    //        //Turn Around
+    //    }
 }
 //0-forward, 1-left, 2-right, 3-uturn
 
@@ -339,7 +372,7 @@ int getSmallestNeighbor()
             }
     }
 
-    if( direction == 'S')
+    if( mouse.dir == SOUTH)
     {
         if( mouse.y != 15)
             if( !MOUSE_GetWall(&maze[HORZ] , mouse.x, mouse.y) && (distance[mouse.x][mouse.y+1] < dist))
@@ -361,7 +394,7 @@ int getSmallestNeighbor()
             }
     }
 
- if( direction == 'E')
+ if( mouse.dir == EAST)
     {
         if( mouse.y != 0)
             if( !MOUSE_GetWall(&maze[HORZ] , mouse.x, mouse.y-1) && (distance[mouse.x][mouse.y-1] < dist))
@@ -383,10 +416,10 @@ int getSmallestNeighbor()
             }
     }
 
-    if( direction == 'W')
+    if( mouse.dir == WEST)
     {
         if( mouse.y != 0)
-            if( !MOUSE_GetWall(&maze[HORZ] , mouse.x,mouse.y-) && (distance[mouse.x][mouse.y-1] < dist ))
+            if( !MOUSE_GetWall(&maze[HORZ] , mouse.x,mouse.y-1) && (distance[mouse.x][mouse.y-1] < dist ))
             {
                 dist = distance[mouse.x][mouse.y-1];
                 ret = 2;
@@ -437,7 +470,7 @@ void pathFollower(){
 	int x = 1;
 	while( !(mouse.y == 0 && mouse.x == 0 ))
 	{
-		next = myMouse->getNextReturnMove();
+		//next = myMouse->getNextReturnMove();
 		distance[mouse.x][mouse.y] = x;
 		x++;
 		if (next == 0 )
@@ -460,7 +493,7 @@ void pathFollower(){
 //return 0 for moveForward, 1 for left turn, 2 for right turn, 3 for uturn
 uint16_t getNextMove()
 {
-    if( direction == NORTH)
+    if( mouse.dir == NORTH)
     {   
         if( mouse.y != 0)
             if( !MOUSE_GetWall(&maze[HORZ],mouse.y-1, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y-1]+1))
@@ -479,7 +512,7 @@ uint16_t getNextMove()
             }
     }   
 
-    if( direction == SOUTH)
+    if( mouse.dir == SOUTH)
     {   
         if( mouse.y != 15) 
             if( !MOUSE_GetWall(&maze[HORZ],mouse.y, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y+1]+1))
@@ -497,7 +530,7 @@ uint16_t getNextMove()
                 return 1;
             }
     }
-    if( direction == EAST)
+    if( mouse.dir == EAST)
     {   
         if( mouse.y != 0)
             if( !MOUSE_GetWall(&maze[HORZ],mouse.y-1, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y-1]+1))
@@ -516,7 +549,7 @@ uint16_t getNextMove()
             }
     }
 
-    if( direction == WEST)
+    if( mouse.dir == WEST)
     {
         if( mouse.y != 0)
             if( !MOUSE_GetWall(&maze[HORZ],mouse.y-1, mouse.x) && (distance[mouse.x][mouse.y] == distance[mouse.x][mouse.y-1]+1))
