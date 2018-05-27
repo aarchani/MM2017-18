@@ -261,20 +261,6 @@ bool MOUSE_HasMouseReturned() {
 }
 
 void floodFill(uint16_t x, uint16_t y) {
-	/*distance[x][y] = dist;
-	//Right
-	if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1))
-		floodFill(x+1, y, dist+1, &distance[16][16], &maze);
-	//Left
-	if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1))
-		floodFill(x-1, y, dist+1, &distance[16][16], &maze);
-	//Up
-	if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1))
-		floodFill(x, y-1, dist+1, &distance[16][16], &maze);
-	//Down
-	if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1))
-		floodFill(x, y+1, dist+1, &distance[16][16], &maze);
-*/
 	uint16_t min = 999;
 	if( !((x == 7 || x == 8 ) && ( y == 7 || y == 8 )) )
 	{
@@ -311,38 +297,38 @@ void floodFill(uint16_t x, uint16_t y) {
 
 void MOUSE_FloodFill() {
 	
-	//uint16_t frontWall = 0;
-    //uint16_t rightWall = 0;
-    //uint16_t leftWall = 0;
-    //uint16_t next;
-    //bool hasStarted = false;
-    //while( !(mouse.x == 0 && mouse.y == 0) || !hasStarted) //myMouse->notDone())
-    //{
-	//	//Add IR sensor calls
-    //    MOUSE_UpdateWalls(frontWall, rightWall, leftWall);
-    //    next = myMouse->getSmallestNeighbor();
-    //    myMouse->floodFill(mouse.x, mouse.y);
-    //    if( next == 0 )
-    //    {
-    //        //MoveForward
-    //        hasStarted = true;
-    //    }
-    //    else if( next == 1 )
-    //    {
-    //        //TurnLeft
-    //        //MoveForward
-    //        hasStarted = true;
-    //    }
-    //    else if( next == 2)
-    //    {
-    //        //TurnRight
-    //        //MoveForward
-    //        hasStarted = true;
-    //    }
-    //    else
-    //    {
-    //        //Turn Around
-    //    }
+	uint16_t frontWall = 0;
+    uint16_t rightWall = 0;
+    uint16_t leftWall = 0;
+    uint16_t next;
+    bool hasStarted = false;
+    while( !(mouse.x == 0 && mouse.y == 0) || !hasStarted) //myMouse->notDone())
+    {
+		//Add IR sensor calls
+        MOUSE_UpdateWalls(frontWall, rightWall, leftWall);
+        next = getSmallestNeighbor();
+        floodFill(mouse.x, mouse.y);
+        if( next == 0 )
+        {
+            //MoveForward
+            hasStarted = true;
+        }
+        else if( next == 1 )
+        {
+            //TurnLeft
+            //MoveForward
+            hasStarted = true;
+        }
+        else if( next == 2)
+        {
+            //TurnRight
+            //MoveForward
+            hasStarted = true;
+        }
+        else
+        {
+            //Turn Around
+        }
 }
 //0-forward, 1-left, 2-right, 3-uturn
 
@@ -449,7 +435,7 @@ void pathFollower(){
 	uint16_t next;
 	while(!MOUSE_IsMazeSolved())
 	{
-		next = getNextMove(); //TODO: implement getNextMove
+		next = getNextMove(); 
 		distance[mouse.x][mouse.y] = 999;
 		if (next == 0 )
 		{
@@ -467,12 +453,12 @@ void pathFollower(){
 		}
 	}
 	//myMouse->turn(2); : turn 180 degree
-	int x = 1;
+	uint16_t x = 1;
 	while( !(mouse.y == 0 && mouse.x == 0 ))
 	{
 		//next = myMouse->getNextReturnMove();
 		distance[mouse.x][mouse.y] = x;
-		x++;
+		x = x+1;
 		if (next == 0 )
 		{
 		//	myMouse->moveForward();
