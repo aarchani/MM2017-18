@@ -7,6 +7,8 @@
 #ifndef MOUSE_H
 #define MOUSE_H
 
+#define min(a,b) ((a)<(b)?(a):(b))
+
 #include "motors.h"
 #include "encoders.h"
 #include "irled.h"
