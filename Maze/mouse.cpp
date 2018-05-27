@@ -513,8 +513,8 @@ void dfs()
 	
 	int dist = 0;
 	stack<coord> list;
-	list.push(coord(vert, horz));
-	distance[vert][horz] = dist;
+	list.push(coord(horz, vert));
+	distance[horz][vert] = dist;
 	while(!list.empty())
 	{
 		coord next = list.top();

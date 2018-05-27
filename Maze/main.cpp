@@ -35,8 +35,8 @@ void lhf(mouse *myMouse, RandomMaze myRandom)
 		{
 			myMouse->turn(1);
 		}
-		myMouse->inMaze.print(myMouse->vert, myMouse->horz, myMouse->direction);
-		usleep(50000);
+		//myMouse->inMaze.print(myMouse->vert, myMouse->horz, myMouse->direction);
+		//usleep(50000);
 	}
 //	cout << "\n I am the champion\n";
 }
@@ -63,8 +63,8 @@ void pathFollower(mouse *myMouse)
 			myMouse->turn(1);
 			myMouse->moveForward();
 		}
-		myMouse->inMaze.printFF(myMouse->vert, myMouse->horz, myMouse->direction, myMouse->distance);
-		usleep(100000);
+		//myMouse->inMaze.printFF(myMouse->vert, myMouse->horz, myMouse->direction, myMouse->distance);
+		//usleep(100000);
 	}
 	myMouse->turn(2);
 	//myMouse->inMaze.printFF(myMouse->vert, myMouse->horz, myMouse->direction, myMouse->distance); 
@@ -88,8 +88,8 @@ void pathFollower(mouse *myMouse)
 			myMouse->turn(1);
 			myMouse->moveForward();
 		}
-		myMouse->inMaze.printFF(myMouse->vert, myMouse->horz, myMouse->direction, myMouse->distance);
-		usleep(100000);
+		//myMouse->inMaze.printFF(myMouse->vert, myMouse->horz, myMouse->direction, myMouse->distance);
+		//usleep(100000);
 	}
 }
 
@@ -105,4 +105,5 @@ int main()
 	ffMouse.FF();
 	ffMouse.inMaze.printFF(ffMouse.vert, ffMouse.horz, ffMouse.direction, ffMouse.distance); 
 	pathFollower(&ffMouse);
+	ffMouse.dfs();
 }
