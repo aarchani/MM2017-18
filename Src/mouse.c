@@ -306,94 +306,95 @@ void MOUSE_FloodFill() {
         }
 }
 //0-forward, 1-left, 2-right, 3-uturn
+
 int getSmallestNeighbor()
 {
     uint16_t dist = 999;
     uint16_t ret;
     if( mouse.dir == NORTH)
     {
-        if( vert != 0)
-            if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] < dist))
+        if( mouse.y != 0)
+            if( !MOUSE_GetWall(&maze[HORZ], mouse.x,mouse.y-1) && (distance[mouse.x][mouse.y-1] < dist))
             {
-                dist = distance[x][y-1];
+                dist = distance[mouse.x][mouse.y-1];
                 ret = 0;
             }
-        if( horz != 0)
-            if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] < dist))
+        if( mouse.x != 0)
+            if( !MOUSE_GetWall(&maze[VERT], mouse.x-1,mouse.y) && (distance[mouse.x-1][mouse.y] < dist))
             {
-                dist = distance[x-1][y];
+                dist = distance[mouse.x-1][mouse.y];
                 ret =  1;
             }
-        if( horz != 15)
-            if( !inMaze.getVWall(vert, horz) && ( distance[x+1][y] < dist))
+        if( mouse.x != 15)
+            if( !MOUSE_GetWall(&maze[VERT], mouse.x,mouse.y) && ( distance[mouse.x+1][mouse.y] < dist))
             {
-                dist = distance[x+1][y];
+                dist = distance[mouse.x+1][mouse.y];
                 ret =  2;
             }
     }
 
     if( direction == 'S')
     {
-        if( vert != 15)
-            if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] < dist))
+        if( mouse.y != 15)
+            if( !MOUSE_GetWall(&maze[HORZ] , mouse.x, mouse.y) && (distance[mouse.x][mouse.y+1] < dist))
             {
-                dist = distance[x][y+1];
+                dist = distance[mouse.x][mouse.y+1];
                 ret = 0;
             }
-        if( horz != 0)
-            if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] < dist))
+        if( mouse.x != 0)
+            if( !MOUSE_GetWall(&maze[VERT], mouse.x-1,mouse.y) && (distance[mouse.x-1][mouse.y] < dist))
             {
-                dist = distance[x-1][y];
+                dist = distance[mouse.x-1][mouse.y];
                 ret = 2;
             }
-        if( horz != 15)
-            if( !inMaze.getVWall(vert, horz) && (distance[x+1][y] < dist))
+        if( mouse.x != 15)
+            if( !MOUSE_GetWall(&maze[VERT], mouse.x,mouse.y) && (distance[mouse.x+1][mouse.y] < dist))
             {
-                dist = distance[x+1][y];
+                dist = distance[mouse.x+1][mouse.y];
                 ret = 1;
             }
     }
 
  if( direction == 'E')
     {
-        if( vert != 0)
-            if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] < dist))
+        if( mouse.y != 0)
+            if( !MOUSE_GetWall(&maze[HORZ] , mouse.x, mouse.y-1) && (distance[mouse.x][mouse.y-1] < dist))
             {
-                dist = distance[x][y-1];
+                dist = distance[mouse.x][mouse.y-1];
                 ret =  1;
             }
-        if( vert != 15)
-            if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] < dist))
+        if( mouse.y != 15)
+            if( !MOUSE_GetWall(&maze[HORZ] , mouse.x, mouse.y) && (distance[mouse.x][mouse.y+1] < dist))
             {
-                dist = distance[x][y+1];
+                dist = distance[mouse.x][mouse.y+1];
                 ret = 2;
             }
-        if( horz != 15)
-            if( !inMaze.getVWall(vert, horz) && (distance[x+1][y] < dist))
+        if( mouse.x != 15)
+            if( !MOUSE_GetWall(&maze[VERT], mouse.x,mouse.y) && (distance[mouse.x+1][mouse.y] < dist))
             {
-                dist = distance[x+1][y];
+                dist = distance[mouse.x+1][mouse.y];
                 ret = 0;
             }
     }
 
     if( direction == 'W')
     {
-        if( vert != 0)
-            if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] < dist ))
+        if( mouse.y != 0)
+            if( !MOUSE_GetWall(&maze[HORZ] , mouse.x,mouse.y-) && (distance[mouse.x][mouse.y-1] < dist ))
             {
-                dist = distance[x][y-1];
+                dist = distance[mouse.x][mouse.y-1];
                 ret = 2;
             }
-        if( horz != 0)
-            if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] <dist ))
+        if( mouse.x != 0)
+            if( !MOUSE_GetWall(&maze[VERT] , mouse.x-1,mouse.y) && (distance[mouse.x-1][mouse.y] <dist ))
             {
-                dist = distance[x-1][y];
+                dist = distance[mouse.x-1][mouse.y];
                 ret =  0;
             }
-        if( vert != 15)
-            if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] < dist))
+        if( mouse.y != 15)
+            if( !MOUSE_GetWall(&maze[HORZ] , mouse.x,mouse.y) && (distance[mouse.x][mouse.y+1] < dist))
             {
-                dist = distance[x][y+1];
+                dist = distance[mouse.x][mouse.y+1];
                 ret = 1;
             }
     }
@@ -401,6 +402,8 @@ int getSmallestNeighbor()
         ret = 3;
     return ret;
 }
+
+
 
 void pathFollower(){
 	//myMouse->turn(2); turn 180
