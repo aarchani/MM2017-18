@@ -44,7 +44,7 @@ void PWM_SetPWM(uint32_t channel, uint16_t val) {
 	}
 }
 
-void PWM_SetPWMVector(uint32_t leftRight, uint16_t val) {
+void PWM_SetPWMVector(uint32_t leftRight, int16_t val) {
 	switch(leftRight) {
 		case MOTOR_LEFT:
 			if (val > 0)

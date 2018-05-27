@@ -46,9 +46,9 @@ int main(void) {
 		MOUSE_MoveDistanceCM(dist);
 	}
 
-	//while (1) {
-	//	dist = ENC_GetAvgDistCM();
-	//}
+	while (1) {
+		dist = ENC_GetAvgDistCM();
+	}
 
 	// TODO Uncomment when Maze Solving is fully implemented
 

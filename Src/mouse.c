@@ -25,52 +25,60 @@ void MOUSE_MoveDistanceCM(float distance) {
 	ENC_ResetEncoders();
 
 	uint32_t maxSpeed = 30;
-	float errorMargin = 0.00000000000001;
+	float errorMargin = 0.1;
 
 	float turnKP = 1.0;
 	float turnKD = 10.0;
 
 	float avgDist = ENC_GetAvgDistCM();
-	float turnErrorP = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+	float turnError = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+	float turnErrorP;
 	float turnErrorD;
-	float turnErrOld = turnErrorP;
-	float turnErrTotal;
+	float turnErrOld = turnError;
+	float turnControlSignal;
 
 	float distKP = 0.35;
 	float distKD = 0.5;
-	float distErrorP = distance - avgDist;
+	float distError = distance - avgDist;
+	float distErrOld = distError;
+	float distErrorP;
 	float distErrorD;
-	float distErrOld = distErrorP;
-	float distErrTotal;
+	float distControlSignal;
 
 	float speedLeft, speedRight;
 
-	//while (fabs(distErrorP) > errorMargin) {
+	//while (fabs(distError) > errorMargin) {
 	while (1) {
-		distErrorP = distance - avgDist;
-		distErrorP *= distKP;
+		distError = distance - avgDist;
+		distErrorP = distError * distKP;
 
-		distErrorD = distErrorP - distErrOld;
+		distErrorD = distError - distErrOld;
 		distErrorD *= distKD;
 
-		turnErrorP = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
-		turnErrorP *= turnKP;
+		turnError = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
+		turnErrorP = turnError * turnKP;
 
-		turnErrorD = turnErrorP - turnErrOld;
+		turnErrorD = turnError - turnErrOld;
 		turnErrorD *= turnKD;
 
-		distErrTotal = distErrorP + distErrorD;
-		turnErrTotal = turnErrorP + turnErrorD;
+		distControlSignal = distErrorP + distErrorD;
+		turnControlSignal = turnErrorP + turnErrorD;
 
-		speedLeft  = maxSpeed - turnErrTotal;
-		speedRight = maxSpeed + turnErrTotal;
+		speedLeft  = maxSpeed ;//- turnControlSignal;
+		speedRight = maxSpeed ;//+ turnControlSignal;
 
-		PWM_SetPWMVector(MOTOR_LEFT,  min(speedLeft  * distErrTotal, maxSpeed));
-		PWM_SetPWMVector(MOTOR_RIGHT, min(speedRight * distErrTotal, maxSpeed));
+		//speedLeft = constrain(speedLeft * distErrTotal, -maxSpeed, maxSpeed);
+		//speedRight = constrain(speedRight * distErrTotal, -maxSpeed, maxSpeed);
+
+		speedLeft =  min(speedLeft * distControlSignal, maxSpeed);
+		speedRight = min(speedRight * distControlSignal, maxSpeed);
+
+		PWM_SetPWMVector(MOTOR_LEFT,  speedLeft);
+		PWM_SetPWMVector(MOTOR_RIGHT, speedRight);
 
 		avgDist = ENC_GetAvgDistCM();
-		turnErrOld = turnErrorP;
-		distErrOld = distErrorP;
+		turnErrOld = turnError;
+		distErrOld = distError;
 	}
 
 	//PWM_StopMotors();
@@ -238,7 +246,7 @@ void MOUSE_PathfinderSolveMaze() {
 void MOUSE_LeftHandFollowStep() {
 	//MOUSE_UpdateWalls();
 
-	//// If there isn't a wall on the left, move to the left cell
+	// If there isn't a wall on the left, move to the left cell
 	//if (!MOUSE_GetWall(WALL_LEFT)) {
 	//	MOUSE_Rotate90Deg(COUNTERCLOCKWISE);
 	//	MOUSE_MoveForwardCell();

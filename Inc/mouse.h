@@ -8,6 +8,7 @@
 #define MOUSE_H
 
 #define min(a,b) ((a)<(b)?(a):(b))
+#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 
 #include "motors.h"
 #include "encoders.h"

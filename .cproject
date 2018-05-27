@@ -188,6 +188,12 @@
 		<!--scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.$(RELEASE_CONFIG_UID);fr.ac6.managedbuild.config.gnu.cross.exe.release.$(RELEASE_CONFIG_UID).;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.$(RELEASE_TOOL_COMPILER_UID);cdt.managedbuild.tool.gnu.c.compiler.input.$(RELEASE_TOOL_COMPILER_INPUT_UID)">
 			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo--><autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622;fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1631193089;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.1781057546">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.debug.1851127474;fr.ac6.managedbuild.config.gnu.cross.exe.debug.1851127474.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1631193089;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.296080960">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622;fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1631193089;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.720147031">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
@@ -198,6 +204,12 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622;fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622.;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.5027762;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.209655239">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.debug.1851127474;fr.ac6.managedbuild.config.gnu.cross.exe.debug.1851127474.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1631193089;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.861814393">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622;fr.ac6.managedbuild.config.gnu.cross.exe.release.903152622.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1631193089;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.1387428884">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
