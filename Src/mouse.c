@@ -270,7 +270,6 @@ void floodFill(uint16_t x, uint16_t y) {
 	}
 }
 
-<<<<<<< HEAD
 void MOUSE_FloodFill() {
 	
 	uint16_t frontWall = 0;
@@ -401,7 +400,8 @@ int getSmallestNeighbor()
     if( dist == 999 )
         ret = 3;
     return ret;
-=======
+}
+
 void pathFollower(){
 	//myMouse->turn(2); turn 180
 	uint16_t next;
@@ -446,9 +446,6 @@ void pathFollower(){
 			//myMouse->moveForward(); :self explanatory
 		}
 	}
-}
-
->>>>>>> cee4c042754bbcef83135fa1352b140a0aa42b48
 }
 
 
