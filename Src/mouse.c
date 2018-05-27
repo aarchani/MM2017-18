@@ -240,9 +240,139 @@ void floodFill(uint16_t x, uint16_t y, uint16_t distance[16][16], uint16_t* maze
 	
 }
 
-void MOUSE_PathfinderSolveMaze() {
-
+void MOUSE_FloodFill() {
+	
+	uint16_t frontWall = 0;
+    uint16_t rightWall = 0;
+    uint16_t leftWall = 0;
+    uint16_t next;
+    bool hasStarted = false;
+    while( !(mouse.x == 0 && mouse.y == 0) || !hasStarted) //myMouse->notDone())
+    {
+		//Add IR sensor calls
+        MOUSE_UpdateWalls(frontWall, rightWall, leftWall);
+        next = myMouse->getSmallestNeighbor();
+        myMouse->floodFill(mouse.x, mouse.y);
+        if( next == 0 )
+        {
+            //MoveForward
+            hasStarted = true;
+        }
+        else if( next == 1 )
+        {
+            //TurnLeft
+            //MoveForward
+            hasStarted = true;
+        }
+        else if( next == 2)
+        {
+            //TurnRight
+            //MoveForward
+            hasStarted = true;
+        }
+        else
+        {
+            //Turn Around
+        }
 }
+//0-forward, 1-left, 2-right, 3-uturn
+int getSmallestNeighbor()
+{
+    uint16_t dist = 999;
+    uint16_t ret;
+    if( mouse.dir == NORTH)
+    {
+        if( vert != 0)
+            if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] < dist))
+            {
+                dist = distance[x][y-1];
+                ret = 0;
+            }
+        if( horz != 0)
+            if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] < dist))
+            {
+                dist = distance[x-1][y];
+                ret =  1;
+            }
+        if( horz != 15)
+            if( !inMaze.getVWall(vert, horz) && ( distance[x+1][y] < dist))
+            {
+                dist = distance[x+1][y];
+                ret =  2;
+            }
+    }
+
+    if( direction == 'S')
+    {
+        if( vert != 15)
+            if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] < dist))
+            {
+                dist = distance[x][y+1];
+                ret = 0;
+            }
+        if( horz != 0)
+            if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] < dist))
+            {
+                dist = distance[x-1][y];
+                ret = 2;
+            }
+        if( horz != 15)
+            if( !inMaze.getVWall(vert, horz) && (distance[x+1][y] < dist))
+            {
+                dist = distance[x+1][y];
+                ret = 1;
+            }
+    }
+
+ if( direction == 'E')
+    {
+        if( vert != 0)
+            if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] < dist))
+            {
+                dist = distance[x][y-1];
+                ret =  1;
+            }
+        if( vert != 15)
+            if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] < dist))
+            {
+                dist = distance[x][y+1];
+                ret = 2;
+            }
+        if( horz != 15)
+            if( !inMaze.getVWall(vert, horz) && (distance[x+1][y] < dist))
+            {
+                dist = distance[x+1][y];
+                ret = 0;
+            }
+    }
+
+    if( direction == 'W')
+    {
+        if( vert != 0)
+            if( !inMaze.getHWall(vert-1, horz) && (distance[x][y-1] < dist ))
+            {
+                dist = distance[x][y-1];
+                ret = 2;
+            }
+        if( horz != 0)
+            if( !inMaze.getVWall(vert, horz-1) && (distance[x-1][y] <dist ))
+            {
+                dist = distance[x-1][y];
+                ret =  0;
+            }
+        if( vert != 15)
+            if( !inMaze.getHWall(vert, horz) && (distance[x][y+1] < dist))
+            {
+                dist = distance[x][y+1];
+                ret = 1;
+            }
+    }
+    if( dist == 999 )
+        ret = 3;
+    return ret;
+}
+
+
 /*
  * Moves the mouse by a single cell
  *

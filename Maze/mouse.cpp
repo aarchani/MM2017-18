@@ -579,15 +579,7 @@ int getSmallestNeighbor()
 				dist = distance[x+1][y];
 				ret =  2;
 			}
-		/*if( ret == 0 )
-			distance[x][y] = distance[x][y-1]+1;
-		else if( ret == 1 )
-			distance[x][y] = distance[x-1][y]+1;
-		else if( ret == 2 )
-			distance[x][y] = distance[x+1][y]+1;
-		else
-			distance[x][y] = distance[x][y+1]+1;
-*/	}
+	}
 
 	if( direction == 'S')
 	{
@@ -609,15 +601,7 @@ int getSmallestNeighbor()
 				dist = distance[x+1][y];
 				ret = 1;
 			}
-/*		if( ret == 0 )
-			distance[x][y] = distance[x][y+1]+1;
-		else if( ret == 1 )
-			distance[x][y] = distance[x+1][y]+1;
-		else if( ret == 2 )
-			distance[x][y] = distance[x-1][y]+1;
-		else
-			distance[x][y] = distance[x][y-1]+1;
-*/	}
+	}
 
 	if( direction == 'E')
 	{
@@ -639,15 +623,7 @@ int getSmallestNeighbor()
 				dist = distance[x+1][y];
 				ret = 0;
 			}
-/*		if( ret == 0 )
-			distance[x][y] = distance[x+1][y]+1;
-		else if( ret == 1 )
-			distance[x][y] = distance[x][y-1]+1;
-		else if( ret == 2 )
-			distance[x][y] = distance[x][y+1]+1;
-		else
-			distance[x][y] = distance[x-1][y]+1;
-*/	}
+	}
 
 	if( direction == 'W')
 	{
@@ -669,15 +645,7 @@ int getSmallestNeighbor()
 				dist = distance[x][y+1];
 				ret = 1;
 			}
-/*		if( ret == 0 )
-			distance[x][y] = distance[x-1][y]+1;
-		else if( ret == 1 )
-			distance[x][y] = distance[x][y+1]+1;
-		else if( ret == 2 )
-			distance[x][y] = distance[x][y-1]+1;
-		else
-			distance[x][y] = distance[x+1][y]+1;
-*/	}
+	}
 	if( dist == 999 )
 		ret = 3;
 	return ret;
