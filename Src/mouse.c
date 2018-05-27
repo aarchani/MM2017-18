@@ -9,8 +9,8 @@ uint16_t maze[2][16] = {0};
 mouse_t mouse = {0, 0, EAST};
 uint16_t distance[16][16] = {-1};
 
-void MOUSE_Init( uint16_t maze[2][16], mouse_t *mouse) {
-	
+void MOUSE_Init() {
+
 
 	//for(int i=0; i<16; i=i+1)
 	//{
@@ -132,7 +132,7 @@ void MOUSE_Rotate90Deg(uint8_t direction) {
 	PWM_StopMotors();
 }
 
-mouse_t aboveCoord(mouse_t mouse) {
+mouse_t aboveCoord() {
 	mouse_t ret;
 	ret.x = mouse.x;
 	ret.y = mouse.y - 1;
@@ -141,7 +141,7 @@ mouse_t aboveCoord(mouse_t mouse) {
 	return ret;
 }
 
-mouse_t leftCoord(mouse_t mouse) {
+mouse_t leftCoord() {
 	mouse_t ret;
 	ret.x = mouse.x - 1;
 	ret.y = mouse.y - 1;
@@ -158,20 +158,20 @@ bool MOUSE_GetWall(uint16_t* walls, uint16_t x, uint16_t y ) {
 	return (walls[y] & ( 1 << x ));
 }
 
-void MOUSE_UpdateWalls(uint16_t *maze, mouse_t mouse, bool front, bool right, bool left) {
+void MOUSE_UpdateWalls(bool front, bool right, bool left) {
 	if( mouse.dir == NORTH )
 	{
 		if( front && mouse.y != 0 )
-			MOUSE_AddWall( &maze[HORZ], aboveCoord(mouse));
+			MOUSE_AddWall( &maze[HORZ], aboveCoord());
 		if( left && mouse.x != 0 )
-			MOUSE_AddWall( &maze[VERT], leftCoord(mouse));
+			MOUSE_AddWall( &maze[VERT], leftCoord());
 		if( right )
 			MOUSE_AddWall( &maze[VERT], mouse);
 	}
 	else if( mouse.dir == EAST )
 	{
 		if( left && mouse.y != 0 )
-			MOUSE_AddWall( &maze[HORZ], aboveCoord(mouse));
+			MOUSE_AddWall( &maze[HORZ], aboveCoord());
 		if( right )
 			MOUSE_AddWall( &maze[HORZ], mouse);
 		if( front )
@@ -182,28 +182,28 @@ void MOUSE_UpdateWalls(uint16_t *maze, mouse_t mouse, bool front, bool right, bo
 		if( front )
 			MOUSE_AddWall( &maze[HORZ], mouse);
 		if( right && mouse.x != 0 )
-			MOUSE_AddWall( &maze[VERT], leftCoord(mouse));
+			MOUSE_AddWall( &maze[VERT], leftCoord());
 		if( left )
 			MOUSE_AddWall( &maze[VERT], mouse);
 	}
 	else if( mouse.dir == WEST )
 	{
 		if( right && mouse.y != 0 )
-			MOUSE_AddWall( &maze[HORZ], aboveCoord(mouse));
+			MOUSE_AddWall( &maze[HORZ], aboveCoord());
 		if( front && mouse.x != 0 )
-			MOUSE_AddWall( &maze[VERT], leftCoord(mouse));
+			MOUSE_AddWall( &maze[VERT], leftCoord());
 		if( left )
 			MOUSE_AddWall( &maze[HORZ], mouse);
 	}
 }
 
-bool MOUSE_IsMazeSolved(mouse_t mouse) {
+bool MOUSE_IsMazeSolved() {
 	if( (mouse.x == 7 || mouse.x == 8) && (mouse.y == 7 || mouse.y == 8) )
 		return true;
 	return false;
 }
 
-bool MOUSE_HasMouseReturned(mouse_t mouse) {
+bool MOUSE_HasMouseReturned() {
 	if( mouse.x == 0 && mouse.y == 0 )
 		return true;
 	return false;
@@ -221,25 +221,56 @@ void MOUSE_PathfinderFloodFill(uint16_t* distance[16][16], uint16_t* maze[2][16]
 	floodFill(8, 8, 0, &distance, &maze);
 }
 
-void floodFill(uint16_t x, uint16_t y, uint16_t distance[16][16], uint16_t* maze) {
+void floodFill(uint16_t x, uint16_t y) {
 	/*distance[x][y] = dist;
 	//Right
-	if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1)) 
+	if( !(MOUSE_GetWall( &maze[VERT], x, y)) && (x != 15) && (distance[x+1][y] == -1))
 		floodFill(x+1, y, dist+1, &distance[16][16], &maze);
 	//Left
-	if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1)) 
+	if( !(MOUSE_GetWall( &maze[VERT], x-1, y)) && (x != 0) && (distance[x-1][y] == -1))
 		floodFill(x-1, y, dist+1, &distance[16][16], &maze);
 	//Up
-	if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1)) 
+	if( !(MOUSE_GetWall( &maze[HORZ], x, y-1)) && (y != 0) && (distance[x][y-1] == -1))
 		floodFill(x, y-1, dist+1, &distance[16][16], &maze);
 	//Down
-	if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1)) 
+	if( !(MOUSE_GetWall( &maze[HORZ], x, y)) && (y != 15) && (distance[x][y+1] == -1))
 		floodFill(x, y+1, dist+1, &distance[16][16], &maze);
 */
 	uint16_t min = 999;
-	
+	if( !((x == 7 || x == 8 ) && ( y == 7 || y == 8 )) )
+	{
+		if( y != 0 )
+			if( !MOUSE_GetWall(&maze[HORZ],x, y-1))
+				if( distance[x][y-1] < min )
+					min = distance[x][y-1];
+		if( y != 15 )
+			if( !MOUSE_GetWall(&maze[HORZ],x, y))
+				if( distance[x][y+1] < min )
+					min = distance[x][y+1];
+		if( x != 0 )
+			if( !MOUSE_GetWall(&maze[VERT],x-1, y))
+				if( distance[x-1][y] < min )
+					min = distance[x-1][y];
+		if( x != 15 )
+			if( !MOUSE_GetWall(&maze[VERT],x, y))
+				if( distance[x+1][y] < min )
+					min = distance[x+1][y];
+		if( distance[x][y] != min + 1 )
+		{
+			distance[x][y] = min +1;
+			if( x != 15 )
+				floodFill(x+1, y);
+			if( x != 0 )
+				floodFill(x-1, y);
+			if( y != 0 )
+				floodFill(x, y-1);
+			if( y != 15 )
+				floodFill(x, y+1);
+		}
+	}
 }
 
+<<<<<<< HEAD
 void MOUSE_FloodFill() {
 	
 	uint16_t frontWall = 0;
@@ -370,6 +401,54 @@ int getSmallestNeighbor()
     if( dist == 999 )
         ret = 3;
     return ret;
+=======
+void pathFollower(){
+	//myMouse->turn(2); turn 180
+	uint16_t next;
+	while(!MOUSE_IsMazeSolved())
+	{
+		next = getNextMove(); //TODO: implement getNextMove
+		distance[mouse.x][mouse.y] = 999;
+		if (next == 0 )
+		{
+		//	myMouse->moveForward();
+		}
+		else if( next == 1 )
+		{
+			//myMouse->turn(0); :turn left
+			//myMouse->moveForward();
+		}
+		else if( next == 2)
+		{
+			//myMouse->turn(1); : turn right
+			//myMouse->moveForward();
+		}
+	}
+	//myMouse->turn(2); : turn 180 degree
+	int x = 1;
+	while( !(mouse.y == 0 && mouse.x == 0 ))
+	{
+		next = myMouse->getNextReturnMove();
+		distance[mouse.x][mouse.y] = x;
+		x++;
+		if (next == 0 )
+		{
+		//	myMouse->moveForward();
+		}
+		else if( next == 1 )
+		{
+			//myMouse->turn(0); : :turn right
+		//	myMouse->moveForward();
+		}
+		else if( next == 2)
+		{
+			//myMouse->turn(1); :turn right
+			//myMouse->moveForward(); :self explanatory
+		}
+	}
+}
+
+>>>>>>> cee4c042754bbcef83135fa1352b140a0aa42b48
 }
 
 
