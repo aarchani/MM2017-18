@@ -24,65 +24,71 @@ void MOUSE_Init() {
 void MOUSE_MoveDistanceCM(float distance) {
 	ENC_ResetEncoders();
 
-	float maxSpeed = 0.15;
-	float errorMargin = 0.001;
+	float maxSpeed = 0.30;
+	float errorMargin = 0.015;
 
-	float turnKP = 0.01;
-	float turnKD = 0.0;
+	float distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
+	float distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
 
-	float avgDist = ENC_GetAvgDistCM();
-	float turnError = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
-	float turnErrorP;
-	float turnErrorD;
-	float turnErrOld = turnError;
-	float turnControlSignal;
+	float distKP = 0.02;
+	float distKD = 1.0;
 
-	float distKP = 0.50;
-	float distKD = 0.0;
+	float distLeftError = distance - distLeft;
+	float distLeftErrOld = distLeftError;
+	float distLeftErrorP;
+	float distLeftErrorD;
+	float distLeftSignal;
 
-	float distError = distance - avgDist;
-	float distErrOld = distError;
-	float distErrorP;
-	float distErrorD;
-	float distControlSignal;
+	float distRightError = distance - distRight;
+	float distRightErrOld = distRightError;
+	float distRightErrorP;
+	float distRightErrorD;
+	float distRightSignal;
 
 	float speedLeft, speedRight;
 
-	while (fabs(distError) > errorMargin) {
+	uint32_t timeoutStart = HAL_GetTick();
+	uint32_t currentTick = HAL_GetTick();
+	uint32_t timeout = 1000;
+
+	while (fabs(distLeftError) > errorMargin || fabs(distRightError) > errorMargin) {
 	//while (1) {
-		distError = distance - avgDist;
-		distErrorP = distError * distKP;
+	    distLeft = ENC_GetEncoderDistanceCM(ENCODER_LEFT);
+	    distRight = ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
 
-		distErrorD = distError - distErrOld;
-		distErrorD *= distKD;
+		distLeftError = distance - distLeft;
+		distLeftErrorP = distLeftError * distKP;
 
-		turnError = ENC_GetEncoderDistanceCM(ENCODER_LEFT) - ENC_GetEncoderDistanceCM(ENCODER_RIGHT);
-		turnErrorP = turnError * turnKP;
+		distLeftErrorD = distLeftError - distLeftErrOld;
+		distLeftErrorD *= distKD;
 
-		turnErrorD = turnError - turnErrOld;
-		turnErrorD *= turnKD;
+		distLeftSignal = distLeftErrorP + distLeftErrorD;
 
-		distControlSignal = distErrorP + distErrorD;
-		turnControlSignal = turnErrorP + turnErrorD;
+		speedLeft =  min(distLeftSignal, maxSpeed);
 
-		speedLeft  = maxSpeed ; // - turnControlSignal;
-		speedRight = maxSpeed ; // + turnControlSignal;
 
-		//speedLeft = constrain(speedLeft * distErrTotal, -maxSpeed, maxSpeed);
-		//speedRight = constrain(speedRight * distErrTotal, -maxSpeed, maxSpeed);
+		distRightError = distance - distRight;
+		distRightErrorP = distRightError * distKP;
 
-		speedLeft =  min(speedLeft * distControlSignal, maxSpeed);
-		speedRight = min(speedRight * distControlSignal, maxSpeed);
+		distRightErrorD = distRightError - distRightErrOld;
+		distRightErrorD *= distKD;
+
+		distRightSignal = distRightErrorP + distRightErrorD;
+
+		speedRight = min(distRightSignal, maxSpeed);
 
 		PWM_SetPWMVector(MOTOR_LEFT,  speedLeft);
 		PWM_SetPWMVector(MOTOR_RIGHT, speedRight);
 
-		avgDist = ENC_GetAvgDistCM();
-		turnErrOld = turnError;
-		distErrOld = distError;
+		distRightErrOld = distRightError;
+		distLeftErrOld = distLeftError;
+
+		currentTick = HAL_GetTick();
+		if (currentTick - timeoutStart > timeout)
+			break;
 	}
 
-	//PWM_StopMotors();
+	PWM_StopMotors();
 }
 
 void MOUSE_MoveForwardCell(mouse_t* mouse) {

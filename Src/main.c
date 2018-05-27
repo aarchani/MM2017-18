@@ -41,10 +41,12 @@ int main(void) {
 
 	float dist = 18.0;
 
-	for (int i = 0; i < 4; i++) {
-		MOUSE_MoveDistanceCM(dist);
-		HAL_Delay(1000);
+	for (int i = 0; i < 16; i++) {
+		//MOUSE_MoveDistanceCM(dist);
+		MOUSE_Rotate90Deg(CLOCKWISE);
+		HAL_Delay(500);
 	}
+
 
 	//PWM_SetSpeed(DIR_FWD, 0.05);
 	//initSurprise();
